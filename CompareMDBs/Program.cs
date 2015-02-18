@@ -354,27 +354,32 @@ namespace CompareMDBs
        
         public static void CreateIndexes(string _path)
         {
+            //pk_info_taskpreparation - for PKs
+            //ix_info_taskpreparation_task_id, ix_info_taskpreparation_guid - for _id and guid
             string conString = ("Provider=Microsoft.JET.OLEDB.4.0;data source=" + _path + ";Persist Security Info=False;");
             using (OleDbConnection con = new OleDbConnection())
             {
+                var allTables = GetDBTables(_path);
+                List<string> allColumns = new List<string>();
+                DataTable columns;
+
                 con.ConnectionString = conString;
                 con.Open();
-                object[] restrictions = new object[3];
-                System.Data.DataTable table = con.GetOleDbSchemaTable(OleDbSchemaGuid.Indexes, restrictions);
 
-                foreach (System.Data.DataRow row in table.Rows)
+                allTables.ForEach(delegate(String currentTable)
                 {
-                    string tableName = row[2].ToString();
-                    if (tableName.Contains("rep_"))
+                    columns = con.GetOleDbSchemaTable(OleDbSchemaGuid.Columns,
+                                                        new object[] { null, null, currentTable, null });
+                    //row["COLUMN_NAME"].ToString()
+                    foreach(DataRow row in columns.Rows)
                     {
-                        foreach (System.Data.DataColumn col in table.Columns)
+                        if (row["COLUMN_NAME"].ToString().EndsWith("_id") ||
+                            row["COLUMN_NAME"].ToString() == "guid")
                         {
-                            Console.WriteLine(tableName + "_-_" + "{0} = {1}",
-                              col.ColumnName, row[col]);
+                            //check index and create if it doesn't
                         }
-                        Console.WriteLine("============================");
                     }
-                }
+                });
                 con.Close();
             }
         }

@@ -360,7 +360,7 @@ namespace CompareMDBs
             using (OleDbConnection con = new OleDbConnection())
             {
                 var allTables = GetDBTables(_path);
-                List<string> allColumns = new List<string>();
+                List<string> tableIndexes = new List<string>();
                 DataTable columns;
 
                 con.ConnectionString = conString;
@@ -368,16 +368,49 @@ namespace CompareMDBs
 
                 allTables.ForEach(delegate(String currentTable)
                 {
+                    tableIndexes.Clear();
                     columns = con.GetOleDbSchemaTable(OleDbSchemaGuid.Columns,
                                                         new object[] { null, null, currentTable, null });
-                    //row["COLUMN_NAME"].ToString()
-                    foreach(DataRow row in columns.Rows)
+                    
+                    //getting a list of all indexes for current table
+                    string[] restrictions = new string[5];
+                    restrictions[4] = currentTable;
+                    System.Data.DataTable indexes = con.GetSchema("Indexes", restrictions);
+                    foreach (DataRow rowIndex in indexes.Rows)
                     {
-                        if (row["COLUMN_NAME"].ToString().EndsWith("_id") ||
-                            row["COLUMN_NAME"].ToString() == "guid")
+                        tableIndexes.Add(rowIndex["COLUMN_NAME"].ToString());
+                    }
+
+
+                    //check if column is a foreign key or 'guid' or primary key. if so, check if index exists for this column
+                    //if no - create uniqu asc index
+                    string createIndex;
+                    foreach(DataRow rowColumn in columns.Rows)
+                    {
+                        string currentField = rowColumn["COLUMN_NAME"].ToString();
+                        if ((currentField.EndsWith("_id") || currentField == "guid")
+                            && !tableIndexes.Contains(currentField))
                         {
-                            //check index and create if it doesn't
+                            createIndex = "CREATE INDEX ix_" + currentTable + "_" + currentField +
+                                                  " ON " + currentTable + " ([" + currentField + "] ASC)";
+                            OleDbCommand dbcommand = new OleDbCommand();
+                            dbcommand.CommandText = createIndex;
+                            dbcommand.CommandType = CommandType.Text;
+                            dbcommand.Connection = con;
+                            int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());  //dbcommand.ExecuteNonQuery();
                         }
+                        if (currentField == "id"
+                            && !tableIndexes.Contains(currentField))
+                        {
+                            createIndex = "CREATE UNIQUE INDEX pk_" + currentTable +
+                                                  " ON " + currentTable + " (id ASC) WITH PRIMARY";
+                            OleDbCommand dbcommand = new OleDbCommand();
+                            dbcommand.CommandText = createIndex;
+                            dbcommand.CommandType = CommandType.Text;
+                            dbcommand.Connection = con;
+                            int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());  //dbcommand.ExecuteNonQuery();
+                        }
+
                     }
                 });
                 con.Close();

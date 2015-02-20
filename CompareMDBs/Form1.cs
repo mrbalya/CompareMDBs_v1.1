@@ -176,9 +176,18 @@ namespace CompareMDBs
             }
         }
 
-        private void btn_indexDB_Click(object sender, EventArgs e)
+        private void btn_compact_Click(object sender, EventArgs e)
         {
-            Program.CreateIndexes(".//Teamsoft.mdb");
+            try
+            {
+                Program.compactAndRepair(".\\Teamsoft.mdb");
+                Program.CreateIndexes(".\\Teamsoft.mdb");
+            }
+            catch(OleDbException ex)
+            {
+                MessageBox.Show("Oops! \n" + ex.Message + " \n Try compare MDB with ");
+            }
         }
+
     }
 }

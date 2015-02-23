@@ -109,7 +109,7 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(530, 248);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Drop table";
+            this.tabPage2.Text = "Удалить таблицу";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // label1
@@ -117,9 +117,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(7, 3);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(244, 13);
+            this.label1.Size = new System.Drawing.Size(276, 13);
             this.label1.TabIndex = 4;
-            this.label1.Text = "Enter a name of the table, that should be dropped:";
+            this.label1.Text = "Введите название таблицы, которую хотите удалить:";
             // 
             // txtDelTable
             // 
@@ -127,7 +127,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtDelTable.Location = new System.Drawing.Point(7, 19);
             this.txtDelTable.Name = "txtDelTable";
-            this.txtDelTable.Size = new System.Drawing.Size(260, 20);
+            this.txtDelTable.Size = new System.Drawing.Size(276, 20);
             this.txtDelTable.TabIndex = 3;
             // 
             // button2
@@ -154,7 +154,7 @@
             this.tab_delOldData.Padding = new System.Windows.Forms.Padding(3);
             this.tab_delOldData.Size = new System.Drawing.Size(530, 248);
             this.tab_delOldData.TabIndex = 2;
-            this.tab_delOldData.Text = "Delete old data";
+            this.tab_delOldData.Text = "Удалить старые данные";
             this.tab_delOldData.UseVisualStyleBackColor = true;
             // 
             // btn_exportToNewMDB
@@ -164,7 +164,7 @@
             this.btn_exportToNewMDB.Name = "btn_exportToNewMDB";
             this.btn_exportToNewMDB.Size = new System.Drawing.Size(100, 25);
             this.btn_exportToNewMDB.TabIndex = 5;
-            this.btn_exportToNewMDB.Text = "Export selected";
+            this.btn_exportToNewMDB.Text = "Экспорт данных";
             this.btn_exportToNewMDB.UseVisualStyleBackColor = true;
             this.btn_exportToNewMDB.Click += new System.EventHandler(this.btn_exportToNewMDB_Click);
             // 
@@ -175,7 +175,7 @@
             this.btn_deleteOldData.Name = "btn_deleteOldData";
             this.btn_deleteOldData.Size = new System.Drawing.Size(100, 25);
             this.btn_deleteOldData.TabIndex = 4;
-            this.btn_deleteOldData.Text = "Delete";
+            this.btn_deleteOldData.Text = "Удалить данные";
             this.btn_deleteOldData.UseVisualStyleBackColor = true;
             this.btn_deleteOldData.Click += new System.EventHandler(this.btn_deleteOldData_Click);
             // 
@@ -184,9 +184,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(3, 3);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(389, 13);
+            this.label3.Size = new System.Drawing.Size(321, 13);
             this.label3.TabIndex = 3;
-            this.label3.Text = "Выберите, до какой даты следует очистить данные в выбранных таблицах:";
+            this.label3.Text = "Выберите таблицы, в которых нужно удалить старые данные:";
             // 
             // label2
             // 
@@ -230,14 +230,14 @@
             this.btn_compact.UseVisualStyleBackColor = true;
             this.btn_compact.Click += new System.EventHandler(this.btn_compact_Click);
             // 
-            // Form1
+            // CompareMDBs
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(539, 272);
             this.Controls.Add(this.btn_compact);
             this.Controls.Add(this.Compare);
-            this.Name = "Form1";
+            this.Name = "CompareMDBs";
             this.Text = "Form1";
             this.Compare.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);

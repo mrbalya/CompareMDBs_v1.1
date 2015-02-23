@@ -11,11 +11,12 @@ using System.Windows.Forms;
 
 namespace CompareMDBs
 {
-    public partial class Form1 : Form
+    public partial class CompareMDBs : Form
     {
-        public Form1()
+        public CompareMDBs()
         {
             InitializeComponent();
+            this.Text = "Compare MDBs";
             this.MinimumSize = new Size(555, 310);
             this.listView1.View = View.Details;
             this.listView1.Columns.Add("Table name", listView1.Width, HorizontalAlignment.Left);
@@ -53,6 +54,7 @@ namespace CompareMDBs
             }
         }
         
+        //compare MDBs
         private void button1_Click(object sender, EventArgs e)
         {
             try
@@ -98,6 +100,7 @@ namespace CompareMDBs
             }
         }
 
+        //drop table
         private void button2_Click(object sender, EventArgs e)
         {
             try
@@ -119,6 +122,7 @@ namespace CompareMDBs
             }
         }
 
+        //delete old data
         private void btn_deleteOldData_Click(object sender, EventArgs e)
         {
             string conString = ("Provider=Microsoft.JET.OLEDB.4.0;data source= .\\teamsoft.mdb;Persist Security Info=False;");
@@ -152,6 +156,7 @@ namespace CompareMDBs
             Program.compactAndRepair(".\\Teamsoft.mdb");
             MessageBox.Show("Old values from all table were deleted!");
         }
+        
         //export tables checked in listview to new MDB
         private void btn_exportToNewMDB_Click(object sender, EventArgs e)
         {
@@ -176,12 +181,19 @@ namespace CompareMDBs
             }
         }
 
+        //compact and repair Teamsoft.mdb + add indexes
         private void btn_compact_Click(object sender, EventArgs e)
         {
             try
             {
-                Program.compactAndRepair(".\\Teamsoft.mdb");
-                Program.CreateIndexes(".\\Teamsoft.mdb");
+                if (!File.Exists(".\\Teamsoft.mdb"))
+                    MessageBox.Show("File Teamsoft.mdb doesn't exist in current directory.");
+                else
+                {
+                    Program.prepareDB(".\\Teamsoft.mdb");
+                    Program.compactAndRepair(".\\Teamsoft.mdb");
+                    Program.CreateIndexes(".\\Teamsoft.mdb");
+                }
             }
             catch(OleDbException ex)
             {

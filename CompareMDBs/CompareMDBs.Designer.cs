@@ -1,6 +1,6 @@
 ﻿namespace CompareMDBs
 {
-    partial class Form1
+    partial class CompareMDBs
     {
         /// <summary>
         /// Требуется переменная конструктора.
@@ -250,7 +250,7 @@
         }
 
         #endregion
-
+        
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.TabControl Compare;

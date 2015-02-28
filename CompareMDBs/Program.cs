@@ -126,7 +126,8 @@ namespace CompareMDBs
 
                 int RowsAffected = (int)dbcommand.ExecuteScalar();
                 if (RowsAffected > 0)
-                    MessageBox.Show("В таблице " + _tableForDel + " есть записи, которые не были отправлены на сервер. Таблицу удалить нельзя!");
+                    MessageBox.Show("В таблице " + _tableForDel + " есть записи, которые не были отправлены на сервер. Таблицу удалить нельзя!" + 
+                                    "\n Сделайте от пользователя отправку данных за период и повторите попытку.");
                 else
                 {
                     string dropQuery = "DROP TABLE " + _tableForDel + ";"; 
@@ -134,7 +135,8 @@ namespace CompareMDBs
                     dbcommand.CommandType = CommandType.Text;
                     dbcommand.Connection = dbconn;
                     int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery()); //dbcommand.ExecuteNonQuery();
-                    MessageBox.Show("Table " + _tableForDel + " was dropped!");
+                    //MessageBox.Show("Table " + _tableForDel + " was dropped!");
+                    MessageBox.Show("Таблица " + _tableForDel + " была удалена!");
                 }
             }
             else
@@ -145,7 +147,8 @@ namespace CompareMDBs
                 dbcommand.Connection = dbconn;
                 int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());//dbcommand.ExecuteNonQuery();
                 if (_checkIsExch)
-                    MessageBox.Show("Table " + _tableForDel + " was dropped!");
+                    //MessageBox.Show("Table " + _tableForDel + " was dropped!");
+                    MessageBox.Show("Таблица " + _tableForDel + " была удалена!");
             }
             dbconn.Close();
         }
@@ -201,7 +204,7 @@ namespace CompareMDBs
                     string deleteNotNumeric = "Delete from " + name +
                                               " where not isNumeric(id) or id < 1" +        //deleting rows with not positive or not numeric ID
                                               " or guid is null or currenttime is null";    //and rows without currenttime and guid
-                    string checkRowsDuplicated = "SELECT COUNT(*)"               //total count of duplicated rows in tables
+                    string checkRowsDuplicated = "SELECT COUNT(*)"                          //total count of duplicated rows in tables
                                                 + " FROM ( "
                                                 + " SELECT DISTINCT id"
                                                 + " FROM " + name
@@ -278,7 +281,8 @@ namespace CompareMDBs
             var tablesWithoutPK = getTablesWithoutPK(_path);
 
             if (tablesWithoutPK.Count == 0)
-                MessageBox.Show("All tables have primary key!");
+                //MessageBox.Show("All tables have primary key!");
+                MessageBox.Show("Во всех таблицах есть первичный ключ!");
             else
             {
                 tablesWithoutPK.ForEach(delegate(String name)
@@ -292,7 +296,8 @@ namespace CompareMDBs
                 });
 
                 var message = string.Join(Environment.NewLine, tablesWithoutPK.ToArray());
-                MessageBox.Show("Primary key was added for following tables: " + message);
+                //MessageBox.Show("Primary key was added for following tables: " + message);
+                MessageBox.Show("Первичный ключ был добавлен для следующих таблиц: " + message);
             }
 
             dbconn.Close();
@@ -333,15 +338,13 @@ namespace CompareMDBs
             //clean up (just in case)
             System.Runtime.InteropServices.Marshal.ReleaseComObject(objJRO);
             objJRO = null;
+            if (dbconn != null)
+                dbconn.Close();
         }
 
         public static void CreateNewAccessDatabase(string _path)
         {
-            string conString = ("Provider=Microsoft.JET.OLEDB.4.0;data source=" + _path + ";Persist Security Info=False;");
-            
-
             ADOX.Catalog cat = new ADOX.Catalog();
-            ADOX.Table table = new ADOX.Table();
 
             cat.Create("Provider=Microsoft.Jet.OLEDB.4.0;" + "Data Source=" + _path + "; Jet OLEDB:Engine Type=5");
                 

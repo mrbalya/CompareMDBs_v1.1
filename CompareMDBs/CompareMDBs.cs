@@ -31,7 +31,8 @@ namespace CompareMDBs
             if (Compare.SelectedTab == tab_delOldData)
             {
                 if (!File.Exists(".\\Teamsoft.mdb"))
-                    MessageBox.Show("File Teamsoft.mdb doesn't exist in current directory.");
+                    //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
+                    MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
                 else
                 {
                     List<string> allTables = new List<string>();
@@ -62,7 +63,8 @@ namespace CompareMDBs
                 listView1.Items.Clear();
 
                 if (!File.Exists(".\\empty.mdb") || !File.Exists(".\\Teamsoft.mdb"))
-                    MessageBox.Show("Files empty.mdb or Teamsoft.mdb don't exist in current directory.");
+                    //MessageBox.Show("Files empty.mdb or Teamsoft.mdb don't exist in current directory.");
+                    MessageBox.Show("Файлы 'empty.mdb' или 'Teamsoft.mdb' не существуют в текущей папке.");
                 else
                 {
                     var empty = Program.GetDBTables(".\\empty.mdb");
@@ -77,7 +79,8 @@ namespace CompareMDBs
                     });
 
                     Program.insertTables(".\\empty.mdb", ".\\Teamsoft.mdb", NotFoundInTeamsoft);
-                    MessageBox.Show("All tables have been inserted!");
+                    //MessageBox.Show("All tables have been inserted!");
+                    MessageBox.Show("Все таблицы были импортированы!");
 
                     Program.prepareDB(".\\Teamsoft.mdb");
                     Program.setPrimaryKeys(".\\Teamsoft.mdb");
@@ -85,7 +88,8 @@ namespace CompareMDBs
                     try
                     {
                         Program.compactAndRepair(".\\Teamsoft.mdb");
-                        MessageBox.Show("Database compacted!");
+                        //MessageBox.Show("Database compacted!");
+                        MessageBox.Show("Сжатие базы данных выполнено.");
                     }
                     catch (Exception e2)
                     {
@@ -95,7 +99,8 @@ namespace CompareMDBs
             }
             catch (OleDbException ex)
             {
-                MessageBox.Show("Oops! " + ex.Message + " \n Try open database with MS Access.");
+                //MessageBox.Show("Oops! " + ex.Message + " \n Try open database with MS Access.");
+                MessageBox.Show("Упс! \n" + ex.Message + " \n Попробуйте открыть базу в MS Access");
 
             }
         }
@@ -106,19 +111,22 @@ namespace CompareMDBs
             try
             {
                 if (!File.Exists(".\\Teamsoft.mdb"))
-                    MessageBox.Show("File Teamsoft.mdb doesn't exist in current directory.");
+                    //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
+                    MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
                 else
                 {
                     if (Program.GetDBTables(".\\Teamsoft.mdb").Contains(txtDelTable.Text.ToString()))
                         Program.dropThisShit(".\\Teamsoft.mdb", txtDelTable.Text.ToString(), true);
-                    else MessageBox.Show("Table with name " + txtDelTable.Text.ToString() +
-                                        " couldn't be found in database. Try drop another table.");
+                    else //MessageBox.Show("Table with name " + txtDelTable.Text.ToString() +
+                         //               " couldn't be found in database. Try drop another table.");
+                         MessageBox.Show("Таблицу с названием " + txtDelTable.Text.ToString() +
+                                   " не удалось найти в базе данных. Проверьте, правильно ли ввели название таблицы.");
                 }
             }
             catch (OleDbException ex)
             {
-                MessageBox.Show("Oops! " + ex.Message + " \n Try open database with MS Access.");
-
+                //MessageBox.Show("Oops! " + ex.Message + " \n Try open database with MS Access.");
+                MessageBox.Show("Упс! \n" + ex.Message + " \n Попробуйте открыть базу в MS Access");
             }
         }
 
@@ -154,14 +162,16 @@ namespace CompareMDBs
             }
             dbconn.Close();
             Program.compactAndRepair(".\\Teamsoft.mdb");
-            MessageBox.Show("Old values from all table were deleted!");
+            //MessageBox.Show("Old values from all selected tables were deleted!");
+            MessageBox.Show("Старые данные из выбранных таблиц были удалены!");
         }
         
         //export tables checked in listview to new MDB
         private void btn_exportToNewMDB_Click(object sender, EventArgs e)
         {
             if (lst_allTables.CheckedItems.Count == 0)
-                MessageBox.Show("There's no tables to import! Please check tables in list and try again.");
+                //MessageBox.Show("There's no tables to import! Please check tables in list and try again.");
+                MessageBox.Show("Таблицы для импорта не выбраны! Отметьте таблицы в списке и поробуйте повторить.");
             else
             {
                 if (!File.Exists(".\\exported.mdb"))
@@ -177,7 +187,8 @@ namespace CompareMDBs
 
                 Program.insertTables(".\\Teamsoft.mdb", ".\\exported.mdb", lstToExport);
                 Program.compactAndRepair(".\\exported.mdb");
-                MessageBox.Show("All selcted tables were exported into 'export.mdb'");
+                //MessageBox.Show("All selcted tables were exported into 'export.mdb'");
+                MessageBox.Show("Выбранные таблицы экспортированы в файл 'export.mdb'");
             }
         }
 
@@ -187,17 +198,20 @@ namespace CompareMDBs
             try
             {
                 if (!File.Exists(".\\Teamsoft.mdb"))
-                    MessageBox.Show("File Teamsoft.mdb doesn't exist in current directory.");
+                    //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
+                    MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
                 else
                 {
                     Program.prepareDB(".\\Teamsoft.mdb");
                     Program.compactAndRepair(".\\Teamsoft.mdb");
                     Program.CreateIndexes(".\\Teamsoft.mdb");
+                    MessageBox.Show("Сжатие базы данных выполнено, индексирование проведено.");
                 }
             }
             catch(OleDbException ex)
             {
-                MessageBox.Show("Oops! \n" + ex.Message + " \n Try compare MDB with ");
+                //MessageBox.Show("Oops! \n" + ex.Message + " \n Try compare MDB with MS Access");
+                MessageBox.Show("Упс! \n" + ex.Message + " \n Попробуйте сжать/востановить базу в MS Access");
             }
         }
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using System.Reflection;
+//using System.Data.SqlClient;
 using ADOX; //Requires Microsoft ADO Ext. 2.8 for DDL and Security
 using ADODB;
 
@@ -353,6 +354,7 @@ namespace CompareMDBs
             if (con != null)
                 con.Close();
             cat = null;
+            Program.checkCompactError(_path);
         }
        
         public static void CreateIndexes(string _path)
@@ -417,6 +419,40 @@ namespace CompareMDBs
                     }
                 });
                 con.Close();
+            }
+        }
+
+        public static void checkCompactError (string _path)
+        {
+            if (Program.GetDBTables(_path).Contains("MSysCompactError"))
+            {
+                string conString = ("Provider=Microsoft.JET.OLEDB.4.0;data source=" + _path + ";Persist Security Info=False;");
+                OleDbConnection conn = new OleDbConnection(conString);
+                conn.Open();
+                OleDbCommand dbcommand = new OleDbCommand();
+
+                string selErrorTables = "SELECT DISTINCT ErrorTable FROM MSysCompactError";
+                string corruptedTables = "";
+
+                dbcommand.CommandText = selErrorTables;
+                dbcommand.CommandType = CommandType.Text;
+                dbcommand.Connection = conn;
+                try
+                {
+                    OleDbDataReader dr = dbcommand.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        string currentDr = dr[0].ToString();
+                        corruptedTables = corruptedTables + "\n" + currentDr;
+                    }
+                }
+                catch (OleDbException oError)
+                {
+                    MessageBox.Show("Oops! " + oError.ToString());
+                }
+                conn.Close();
+
+                MessageBox.Show("В базе данных " + _path.Replace(".\\", "") + " могут быть повреждённые таблицы:" + corruptedTables);
             }
         }
     }

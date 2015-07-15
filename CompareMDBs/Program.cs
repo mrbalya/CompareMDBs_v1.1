@@ -143,11 +143,11 @@ namespace CompareMDBs
 
                 int RowsAffected = (int)dbcommand.ExecuteScalar();
                 if (RowsAffected > 0)
-                    MessageBox.Show("В таблице " + _tableForDel + " есть записи, которые не были отправлены на сервер. Таблицу удалить нельзя!" + 
+                    MessageBox.Show("В таблице " + _tableForDel + " есть записи, которые не были отправлены на сервер. Таблицу удалить нельзя!" +
                                     "\n Сделайте от пользователя отправку данных за период и повторите попытку.");
                 else
                 {
-                    string dropQuery = "DROP TABLE " + _tableForDel + ";"; 
+                    string dropQuery = "DROP TABLE " + _tableForDel + ";";
                     dbcommand.CommandText = dropQuery;
                     dbcommand.CommandType = CommandType.Text;
                     dbcommand.Connection = dbconn;

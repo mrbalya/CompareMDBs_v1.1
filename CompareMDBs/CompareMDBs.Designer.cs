@@ -32,6 +32,9 @@
             this.listView1 = new System.Windows.Forms.ListView();
             this.Compare = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.lbl_conditionTab1 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.txtDelTable = new System.Windows.Forms.TextBox();
@@ -44,6 +47,9 @@
             this.pckr_dueDate = new System.Windows.Forms.DateTimePicker();
             this.lst_allTables = new System.Windows.Forms.CheckedListBox();
             this.btn_compact = new System.Windows.Forms.Button();
+            this.progressBar3 = new System.Windows.Forms.ProgressBar();
+            this.label5 = new System.Windows.Forms.Label();
+            this.lbl_conditionTab3 = new System.Windows.Forms.Label();
             this.Compare.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -53,7 +59,7 @@
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(423, 220);
+            this.button1.Location = new System.Drawing.Point(423, 240);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(100, 25);
             this.button1.TabIndex = 0;
@@ -69,7 +75,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listView1.Location = new System.Drawing.Point(6, 6);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(518, 207);
+            this.listView1.Size = new System.Drawing.Size(518, 228);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             // 
@@ -84,20 +90,57 @@
             this.Compare.Location = new System.Drawing.Point(0, -2);
             this.Compare.Name = "Compare";
             this.Compare.SelectedIndex = 0;
-            this.Compare.Size = new System.Drawing.Size(538, 274);
+            this.Compare.Size = new System.Drawing.Size(538, 343);
             this.Compare.TabIndex = 3;
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.btn_compact);
+            this.tabPage1.Controls.Add(this.lbl_conditionTab1);
+            this.tabPage1.Controls.Add(this.label4);
+            this.tabPage1.Controls.Add(this.progressBar1);
             this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.listView1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(530, 248);
+            this.tabPage1.Size = new System.Drawing.Size(530, 317);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Compare MDBs";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // lbl_conditionTab1
+            // 
+            this.lbl_conditionTab1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lbl_conditionTab1.AutoSize = true;
+            this.lbl_conditionTab1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lbl_conditionTab1.Location = new System.Drawing.Point(85, 268);
+            this.lbl_conditionTab1.Name = "lbl_conditionTab1";
+            this.lbl_conditionTab1.Size = new System.Drawing.Size(70, 15);
+            this.lbl_conditionTab1.TabIndex = 4;
+            this.lbl_conditionTab1.Text = "                     ";
+            // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label4.Location = new System.Drawing.Point(6, 268);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(73, 15);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Состояние:";
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar1.Location = new System.Drawing.Point(6, 286);
+            this.progressBar1.MarqueeAnimationSpeed = 2;
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(517, 23);
+            this.progressBar1.Step = 1;
+            this.progressBar1.TabIndex = 2;
             // 
             // tabPage2
             // 
@@ -107,7 +150,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(530, 248);
+            this.tabPage2.Size = new System.Drawing.Size(530, 317);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Удалить таблицу";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -133,7 +176,7 @@
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(424, 220);
+            this.button2.Location = new System.Drawing.Point(423, 240);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(100, 25);
             this.button2.TabIndex = 2;
@@ -143,6 +186,9 @@
             // 
             // tab_delOldData
             // 
+            this.tab_delOldData.Controls.Add(this.lbl_conditionTab3);
+            this.tab_delOldData.Controls.Add(this.label5);
+            this.tab_delOldData.Controls.Add(this.progressBar3);
             this.tab_delOldData.Controls.Add(this.btn_exportToNewMDB);
             this.tab_delOldData.Controls.Add(this.btn_deleteOldData);
             this.tab_delOldData.Controls.Add(this.label3);
@@ -152,7 +198,7 @@
             this.tab_delOldData.Location = new System.Drawing.Point(4, 22);
             this.tab_delOldData.Name = "tab_delOldData";
             this.tab_delOldData.Padding = new System.Windows.Forms.Padding(3);
-            this.tab_delOldData.Size = new System.Drawing.Size(530, 248);
+            this.tab_delOldData.Size = new System.Drawing.Size(530, 317);
             this.tab_delOldData.TabIndex = 2;
             this.tab_delOldData.Text = "Удалить старые данные";
             this.tab_delOldData.UseVisualStyleBackColor = true;
@@ -160,7 +206,7 @@
             // btn_exportToNewMDB
             // 
             this.btn_exportToNewMDB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_exportToNewMDB.Location = new System.Drawing.Point(317, 220);
+            this.btn_exportToNewMDB.Location = new System.Drawing.Point(317, 240);
             this.btn_exportToNewMDB.Name = "btn_exportToNewMDB";
             this.btn_exportToNewMDB.Size = new System.Drawing.Size(100, 25);
             this.btn_exportToNewMDB.TabIndex = 5;
@@ -171,7 +217,7 @@
             // btn_deleteOldData
             // 
             this.btn_deleteOldData.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_deleteOldData.Location = new System.Drawing.Point(423, 220);
+            this.btn_deleteOldData.Location = new System.Drawing.Point(423, 240);
             this.btn_deleteOldData.Name = "btn_deleteOldData";
             this.btn_deleteOldData.Size = new System.Drawing.Size(100, 25);
             this.btn_deleteOldData.TabIndex = 4;
@@ -192,7 +238,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 176);
+            this.label2.Location = new System.Drawing.Point(6, 202);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(389, 13);
             this.label2.TabIndex = 2;
@@ -202,7 +248,7 @@
             // 
             this.pckr_dueDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.pckr_dueDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.pckr_dueDate.Location = new System.Drawing.Point(6, 192);
+            this.pckr_dueDate.Location = new System.Drawing.Point(6, 218);
             this.pckr_dueDate.Name = "pckr_dueDate";
             this.pckr_dueDate.Size = new System.Drawing.Size(200, 20);
             this.pckr_dueDate.TabIndex = 1;
@@ -216,13 +262,13 @@
             this.lst_allTables.FormattingEnabled = true;
             this.lst_allTables.Location = new System.Drawing.Point(6, 19);
             this.lst_allTables.Name = "lst_allTables";
-            this.lst_allTables.Size = new System.Drawing.Size(517, 154);
+            this.lst_allTables.Size = new System.Drawing.Size(517, 169);
             this.lst_allTables.TabIndex = 0;
             // 
             // btn_compact
             // 
-            this.btn_compact.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_compact.Location = new System.Drawing.Point(10, 240);
+            this.btn_compact.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btn_compact.Location = new System.Drawing.Point(3, 240);
             this.btn_compact.Name = "btn_compact";
             this.btn_compact.Size = new System.Drawing.Size(100, 25);
             this.btn_compact.TabIndex = 8;
@@ -230,17 +276,48 @@
             this.btn_compact.UseVisualStyleBackColor = true;
             this.btn_compact.Click += new System.EventHandler(this.btn_compact_Click);
             // 
+            // progressBar3
+            // 
+            this.progressBar3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar3.Location = new System.Drawing.Point(6, 286);
+            this.progressBar3.Name = "progressBar3";
+            this.progressBar3.Size = new System.Drawing.Size(517, 23);
+            this.progressBar3.Step = 1;
+            this.progressBar3.TabIndex = 6;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label5.Location = new System.Drawing.Point(6, 268);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(73, 15);
+            this.label5.TabIndex = 7;
+            this.label5.Text = "Состояние:";
+            // 
+            // lbl_conditionTab3
+            // 
+            this.lbl_conditionTab3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lbl_conditionTab3.AutoSize = true;
+            this.lbl_conditionTab3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lbl_conditionTab3.Location = new System.Drawing.Point(85, 268);
+            this.lbl_conditionTab3.Name = "lbl_conditionTab3";
+            this.lbl_conditionTab3.Size = new System.Drawing.Size(61, 15);
+            this.lbl_conditionTab3.TabIndex = 8;
+            this.lbl_conditionTab3.Text = "                  ";
+            // 
             // CompareMDBs
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(539, 272);
-            this.Controls.Add(this.btn_compact);
+            this.ClientSize = new System.Drawing.Size(539, 341);
             this.Controls.Add(this.Compare);
             this.Name = "CompareMDBs";
             this.Text = "Form1";
             this.Compare.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.tab_delOldData.ResumeLayout(false);
@@ -267,6 +344,12 @@
         private System.Windows.Forms.Button btn_deleteOldData;
         private System.Windows.Forms.Button btn_exportToNewMDB;
         private System.Windows.Forms.Button btn_compact;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Label lbl_conditionTab1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lbl_conditionTab3;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ProgressBar progressBar3;
     }
 }
 

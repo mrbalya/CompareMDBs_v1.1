@@ -24,6 +24,7 @@ namespace CompareMDBs
             this.pckr_dueDate.CustomFormat = "yyyy-MM-dd";
             this.pckr_dueDate.Value = DateTime.Today.AddYears(-1);
             Compare.SelectedIndexChanged += new EventHandler(Tabs_SelectedIndexChanged); //handling of tab selected
+            Program.addToLog("******** Запуск программы ********");
         }
 
         private void Tabs_SelectedIndexChanged(object sender, EventArgs e)//handling of tab selected
@@ -61,12 +62,15 @@ namespace CompareMDBs
             try
             {
                 listView1.Items.Clear();
+                progressBar1.Value = 0;
+                lbl_conditionTab1.Text = "";
 
                 if (!File.Exists(".\\empty.mdb") || !File.Exists(".\\Teamsoft.mdb"))
                     //MessageBox.Show("Files empty.mdb or Teamsoft.mdb don't exist in current directory.");
                     MessageBox.Show("Файлы 'empty.mdb' или 'Teamsoft.mdb' не существуют в текущей папке.");
                 else
                 {
+                    lbl_conditionTab1.Text = "Ищем недостающие таблицы";
                     var empty = Program.GetDBTables(".\\empty.mdb");
                     var teamsoft = Program.GetDBTables(".\\Teamsoft.mdb");
                     var NotFoundInTeamsoft = empty.Except(teamsoft).ToList();
@@ -77,19 +81,28 @@ namespace CompareMDBs
                         listView1.Items.Add(name, counter);
                         counter++;
                     });
+                    progressBar1.Value += 2;
 
                     Program.insertTables(".\\empty.mdb", ".\\Teamsoft.mdb", NotFoundInTeamsoft);
                     //MessageBox.Show("All tables have been inserted!");
-                    MessageBox.Show("Все таблицы были импортированы!");
+                    //MessageBox.Show("Все таблицы были импортированы!");
+                    lbl_conditionTab1.Text = "Все таблицы были импортированы! Идёт подготовка БД.";
+                    progressBar1.Value += 3;
 
                     Program.prepareDB(".\\Teamsoft.mdb");
+                    progressBar1.Value += 10;
+                    lbl_conditionTab1.Text = "БД подготовлена. Устанавливаются первичные ключи.";
                     Program.setPrimaryKeys(".\\Teamsoft.mdb");
+                    progressBar1.Value += 35;
 
                     try
                     {
+                        lbl_conditionTab1.Text = "Первичные ключи установлены. Идёт сжатие БД, поождите.";
                         Program.compactAndRepair(".\\Teamsoft.mdb");
+                        progressBar1.Value += 50;
                         //MessageBox.Show("Database compacted!");
-                        MessageBox.Show("Сжатие базы данных выполнено.");
+                        //MessageBox.Show("Сжатие базы данных выполнено.");
+                        lbl_conditionTab1.Text = "Сжатие базы данных выполнено.";
                     }
                     catch (Exception e2)
                     {
@@ -159,6 +172,7 @@ namespace CompareMDBs
 
                 int result = Program.ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery()); 
                 //MessageBox.Show("Old values from table '" + item.ToString() + "' were deleted!");
+                Program.addToLog("Записи, внесённые ранее " + dueDate.ToString() + ", были удалены из таблицы " + item.ToString());
             }
             dbconn.Close();
             Program.compactAndRepair(".\\Teamsoft.mdb");
@@ -197,15 +211,28 @@ namespace CompareMDBs
         {
             try
             {
+                progressBar1.Value = 0;
+                lbl_conditionTab1.Text = "";
                 if (!File.Exists(".\\Teamsoft.mdb"))
                     //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
                     MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
                 else
                 {
+                    progressBar1.Value += 5;
+                    
+                    lbl_conditionTab1.Text = "Идёт подготовка БД.";
                     Program.prepareDB(".\\Teamsoft.mdb");
+                    progressBar1.Value += 25;
+                    
+                    lbl_conditionTab1.Text = "БД подготовлена. Идёт сжатие БД, поождите.";
                     Program.compactAndRepair(".\\Teamsoft.mdb");
+                    progressBar1.Value += 50;
+                    
+                    lbl_conditionTab1.Text = "Сжатие базы данных выполнено. Проставляем индексы.";
                     Program.CreateIndexes(".\\Teamsoft.mdb");
-                    MessageBox.Show("Сжатие базы данных выполнено, индексирование проведено.");
+                    progressBar1.Value += 20;
+                    //MessageBox.Show("Сжатие базы данных выполнено, индексирование проведено.");
+                    lbl_conditionTab1.Text = "Сжатие базы данных выполнено, индексирование проведено.";
                 }
             }
             catch(OleDbException ex)

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using System.Reflection;
+using System.IO;
+using System.Management;
 //using System.Data.SqlClient;
 using ADOX; //Requires Microsoft ADO Ext. 2.8 for DDL and Security
 using ADODB;
@@ -76,6 +78,19 @@ namespace CompareMDBs
             return allTables;
         }
 
+        public static void addToLog (string textToAdd)
+        {
+            if (!File.Exists(".\\CompareMDBs.log") )
+                File.Create(".\\CompareMDBs.log").Dispose();
+
+
+            using (StreamWriter w = File.AppendText(".\\CompareMDBs.log"))
+            {
+                w.WriteLine(DateTime.Now + " " + textToAdd);
+            }
+
+        }
+
         public static void insertTables(string path_from, string path_to, List<string> _tables)
         {
 
@@ -92,6 +107,7 @@ namespace CompareMDBs
                 dbcommand.CommandType = CommandType.Text;
                 dbcommand.Connection = dbconn;
                 int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery()); //dbcommand.ExecuteNonQuery();
+                addToLog("Таблица " + name + " была импортирована в базу " + path_to.Except(".\\"));
             });
             
             dbconn.Close();
@@ -137,7 +153,9 @@ namespace CompareMDBs
                     dbcommand.Connection = dbconn;
                     int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery()); //dbcommand.ExecuteNonQuery();
                     //MessageBox.Show("Table " + _tableForDel + " was dropped!");
-                    MessageBox.Show("Таблица " + _tableForDel + " была удалена!");
+                    //MessageBox.Show("Таблица " + _tableForDel + " была удалена!");
+                    if (path.Contains("Teamsoft.mdb"))
+                        addToLog("Таблица " + _tableForDel + " была удалена");
                 }
             }
             else
@@ -148,8 +166,11 @@ namespace CompareMDBs
                 dbcommand.Connection = dbconn;
                 int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());//dbcommand.ExecuteNonQuery();
                 if (_checkIsExch)
+                {
                     //MessageBox.Show("Table " + _tableForDel + " was dropped!");
+                    addToLog("Таблица " + _tableForDel + " была удалена");
                     MessageBox.Show("Таблица " + _tableForDel + " была удалена!");
+                }
             }
             dbconn.Close();
         }
@@ -179,8 +200,10 @@ namespace CompareMDBs
 
                 // if switcher is true and it's 'info' or 'rep' table, then add current table lo list
                 if (switcher && (allTables[counter].Contains("info_") || allTables[counter].Contains("rep_")))
+                {
                     returnList.Add(allTables[counter]);
-
+                    //addToLog("У таблицы " + allTables[counter] + " нет первичного ключа");
+                }
                 counter++;
             });
 
@@ -224,20 +247,23 @@ namespace CompareMDBs
 
                     dbcommand.CommandText = deleteNotNumeric;
                     int result = ConvertFromDBVal<int>(dbcommand.ExecuteScalar());
+                    if (result > 0)
+                        addToLog("Из таблицы " + name + " удалено" + result + " записей с нечисловыми значениями id");
 
                     dbcommand.CommandText = checkRowsDuplicated;
                     int rowsDuplicated = (int)dbcommand.ExecuteScalar();
                     if (rowsDuplicated != 0)
                     {
+                        addToLog("В таблице " + name + " обнаружены задублировавшиеся строки");
                         string checkRowsFullCopy = "SELECT COUNT(*)"
-                        + " FROM ("
-                        + " SELECT DISTINCTROW id "
-                        + " FROM " + name
-                        + " WHERE id IN"
-                        + " (SELECT DISTINCT id"
-                        + " FROM " + name
-                        + " group by id"
-                        + " having count(*) > 1))";
+                                                + " FROM ("
+                                                + " SELECT DISTINCTROW id "
+                                                + " FROM " + name
+                                                + " WHERE id IN"
+                                                + " (SELECT DISTINCT id"
+                                                + " FROM " + name
+                                                + " group by id"
+                                                + " having count(*) > 1))";
                         dbcommand.CommandText = checkRowsFullCopy;
                         int rowsFullCopy = (int)dbcommand.ExecuteScalar();
 
@@ -254,11 +280,13 @@ namespace CompareMDBs
 
                             dbcommand.CommandText = dropTemp;
                             result = ConvertFromDBVal<int>(dbcommand.ExecuteScalar());
+                            addToLog("Задублировавшиеся строки из таблицы " + name + " удалены");
                         }
                         else
                         {
                             dbcommand.CommandText = delDuplicates;
                             result = ConvertFromDBVal<int>(dbcommand.ExecuteScalar());
+                            addToLog("Задублировавшиеся строки из таблицы " + name + " удалены");
                         }
                     }
 
@@ -268,6 +296,7 @@ namespace CompareMDBs
             string clearExceptions = "DELETE FROM info_exception";
             dbcommand.CommandText = clearExceptions;
             int result2 = ConvertFromDBVal<int>(dbcommand.ExecuteScalar());
+            addToLog("Записи из info_exception удалены");
 
             dbconn.Close();
         }
@@ -283,22 +312,25 @@ namespace CompareMDBs
 
             if (tablesWithoutPK.Count == 0)
                 //MessageBox.Show("All tables have primary key!");
-                MessageBox.Show("Во всех таблицах есть первичный ключ!");
+                //MessageBox.Show("Во всех таблицах есть первичный ключ!");
+                addToLog("Во всех таблицах есть первичный ключ");
             else
             {
                 tablesWithoutPK.ForEach(delegate(String name)
                 {
+                    addToLog("В таблице " + name + " не найден первичный ключ");
                     string alterTable = "ALTER TABLE " + name + " ADD PRIMARY KEY (id);";
 
                     dbcommand.CommandText = alterTable;
                     dbcommand.CommandType = CommandType.Text;
                     dbcommand.Connection = dbconn;
                     int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());  //dbcommand.ExecuteNonQuery();
+                    addToLog("Первичный ключ для таблицы " + name + " установлен");
                 });
 
-                var message = string.Join(Environment.NewLine, tablesWithoutPK.ToArray());
+                //var message = string.Join(Environment.NewLine, tablesWithoutPK.ToArray());
                 //MessageBox.Show("Primary key was added for following tables: " + message);
-                MessageBox.Show("Первичный ключ был добавлен для следующих таблиц: " + message);
+                //MessageBox.Show("Первичный ключ был добавлен для следующих таблиц: " + message);
             }
 
             dbconn.Close();
@@ -309,6 +341,7 @@ namespace CompareMDBs
             string conString = ("Provider=Microsoft.JET.OLEDB.4.0;data source=" + _path + ";Persist Security Info=False;");
             OleDbConnection dbconn = new OleDbConnection(conString);
 
+            addToLog("Начато сжатие базы данных");
             object[] oParams;
 
             object objJRO = Activator.CreateInstance(Type.GetTypeFromProgID("JRO.JetEngine"));
@@ -341,10 +374,23 @@ namespace CompareMDBs
             objJRO = null;
             if (dbconn != null)
                 dbconn.Close();
+            addToLog("Сжатие базы данных завершено");
         }
 
-        public static void CreateNewAccessDatabase(string _path)
+        public static void CreateNewAccessDatabase(string _path) // NEED ADD CHECK FOR A FREE DISK SPACE HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         {
+            /*
+            try
+            {
+                string currentdir = Directory.GetCurrentDirectory();
+                //DriveInfo driveInfo = new DriveInfo(Directory.GetCurrentDirectory().First(1).ToString());
+                //long FreeSpace = driveInfo.AvailableFreeSpace;
+            }
+            catch (System.IO.IOException errorMesage)
+            {
+                Console.WriteLine(errorMesage);
+            }
+            */
             ADOX.Catalog cat = new ADOX.Catalog();
 
             cat.Create("Provider=Microsoft.Jet.OLEDB.4.0;" + "Data Source=" + _path + "; Jet OLEDB:Engine Type=5");
@@ -388,7 +434,7 @@ namespace CompareMDBs
 
 
                     //check if column is a foreign key or 'guid' or primary key. if so, check if index exists for this column
-                    //if no - create uniqu asc index
+                    //if no - create unique asc index
                     string createIndex;
                     foreach(DataRow rowColumn in columns.Rows)
                     {
@@ -403,6 +449,7 @@ namespace CompareMDBs
                             dbcommand.CommandType = CommandType.Text;
                             dbcommand.Connection = con;
                             int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());  //dbcommand.ExecuteNonQuery();
+                            addToLog("В таблицу " + currentTable + " добавлен индекс по полю " + currentField);
                         }
                         if (currentField == "id"
                             && !tableIndexes.Contains(currentField))
@@ -414,6 +461,7 @@ namespace CompareMDBs
                             dbcommand.CommandType = CommandType.Text;
                             dbcommand.Connection = con;
                             int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());  //dbcommand.ExecuteNonQuery();
+                            addToLog("В таблицу " + currentTable + " добавлен первичный ключ");
                         }
 
                     }
@@ -452,6 +500,7 @@ namespace CompareMDBs
                 }
                 conn.Close();
 
+                addToLog("В БАЗЕ ДАННЫХ " + _path.Replace(".\\", "") + " МОГУТ БЫТЬ ПОВРЕЖДЁННЫЕ ТАБЛИЦЫ:" + corruptedTables);
                 MessageBox.Show("В базе данных " + _path.Replace(".\\", "") + " могут быть повреждённые таблицы:" + corruptedTables);
             }
         }

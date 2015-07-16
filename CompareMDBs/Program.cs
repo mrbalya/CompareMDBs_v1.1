@@ -153,9 +153,12 @@ namespace CompareMDBs
                     dbcommand.Connection = dbconn;
                     int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery()); //dbcommand.ExecuteNonQuery();
                     //MessageBox.Show("Table " + _tableForDel + " was dropped!");
-                    //MessageBox.Show("Таблица " + _tableForDel + " была удалена!");
                     if (path.Contains("Teamsoft.mdb"))
+                    {
                         addToLog("Таблица " + _tableForDel + " была удалена");
+                        MessageBox.Show("Таблица " + _tableForDel + " была удалена!");
+                    }
+                    ///////////////////////////////////////////////////////////////msgbox?
                 }
             }
             else

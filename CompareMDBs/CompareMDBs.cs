@@ -23,10 +23,56 @@ namespace CompareMDBs
             this.pckr_dueDate.Format = DateTimePickerFormat.Custom;
             this.pckr_dueDate.CustomFormat = "yyyy-MM-dd";
             this.pckr_dueDate.Value = DateTime.Today.AddYears(-1);
-            Compare.SelectedIndexChanged += new EventHandler(Tabs_SelectedIndexChanged); //handling of tab selected
+            //Compare.SelectedIndexChanged += new EventHandler(Tabs_SelectedIndexChanged); //handling of tab selected
+            Compare.Selected += new TabControlEventHandler(Tabs_Selected); //handling of tab selected
             Program.addToLog("******** Запуск программы ********");
         }
 
+        private void Tabs_Selected(object sender, TabControlEventArgs e)
+        {
+            if (e.TabPage.Name == "tab_delOldData")
+            {
+                if (!File.Exists(".\\Teamsoft.mdb"))
+                    //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
+                    MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
+                else
+                {
+                    List<string> allTables = new List<string>();
+                    //array with tables that should be displayed at the top of CheckedListView
+                    string[] highPriorityTables = new string[] {"info_task", "info_contactpotential", "info_companypreparation2",
+                                                "info_taskpreparation", "info_taskmaterial", "info_action", "info_companypromo"};
+
+                    allTables = Program.GetDBTables(".\\Teamsoft.mdb");
+
+                    List<string> selectedTables = new List<string>();
+                    if (lst_allTables.Items.Count > 0 && 
+                        lst_allTables.Items.Count != allTables.Count &&
+                        lst_allTables.CheckedItems.Count > 0)
+                    {
+                        foreach (var Item in lst_allTables.CheckedItems)
+                                selectedTables.Add(Item.ToString());
+                        lst_allTables.Items.Clear();
+                    }
+
+                    //check if high priority tables exists in current DB and add it to listview
+                    for (int i = 0; i < highPriorityTables.Count(); i++)
+                        if (!lst_allTables.Items.Contains(highPriorityTables[i].ToString()))
+                            lst_allTables.Items.Add(highPriorityTables[i]);
+                    //check if table is an "info_" table and add it to listview if it isn't there yet
+                    allTables.ForEach(delegate(String name)
+                    {
+                        if (!lst_allTables.Items.Contains(name) && name.StartsWith("info_"))
+                            lst_allTables.Items.Add(name);
+                        if (selectedTables.Contains(name))
+                            lst_allTables.SetItemChecked(lst_allTables.Items.IndexOf(name), true);
+                    });
+                    lst_allTables.Refresh();
+                }
+            }
+            sender = null;
+            e = null;
+        }
+        /*
         private void Tabs_SelectedIndexChanged(object sender, EventArgs e)//handling of tab selected
         {
             if (Compare.SelectedTab == tab_delOldData)
@@ -55,7 +101,7 @@ namespace CompareMDBs
                 }
             }
         }
-        
+        */
         //compare MDBs
         private void button1_Click(object sender, EventArgs e)
         {

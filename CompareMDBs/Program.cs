@@ -351,8 +351,8 @@ namespace CompareMDBs
 
             try
             {
-                string tempdb = ".\\tempdb_" + DateTime.Now.ToString().Replace(".","_").Replace(" ","_").Replace(":","_") + ".mdb";
-
+                string tempdb = ".\\tempdb_" + DateTime.Now.ToString().Replace(":", "-") + ".mdb";
+                //string tempdb = ".\\tempdb_" + DateTime.Now.ToString().Replace(".", "_").Replace(" ", "_").Replace(":", "_") + ".mdb";
                 //filling Parameters array
                 //cnahge "Jet OLEDB:Engine Type=5" to an appropriate value
                 // or leave it as is if you db is JET4X format (access 2000,2002)

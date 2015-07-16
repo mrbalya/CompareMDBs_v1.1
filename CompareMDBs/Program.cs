@@ -107,7 +107,7 @@ namespace CompareMDBs
                 dbcommand.CommandType = CommandType.Text;
                 dbcommand.Connection = dbconn;
                 int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery()); //dbcommand.ExecuteNonQuery();
-                addToLog("Таблица " + name + " была импортирована в базу " + path_to.Except(".\\"));
+                addToLog("Таблица " + name + " была импортирована в базу " + path_to.ToString().Replace(".\\", ""));
             });
             
             dbconn.Close();
@@ -349,61 +349,87 @@ namespace CompareMDBs
 
             object objJRO = Activator.CreateInstance(Type.GetTypeFromProgID("JRO.JetEngine"));
 
-            //filling Parameters array
-            //cnahge "Jet OLEDB:Engine Type=5" to an appropriate value
-            // or leave it as is if you db is JET4X format (access 2000,2002)
-            //(yes, jetengine5 is for JET4X, no misprint here)
-            oParams = new object[] {
-                conString,
-                "Provider=Microsoft.Jet.OLEDB.4.0;Data" + 
-                " Source=.\\tempdb.mdb;Jet OLEDB:Engine Type=5"};
+            try
+            {
+                string tempdb = ".\\tempdb_" + DateTime.Now.ToString().Replace(".","_").Replace(" ","_").Replace(":","_") + ".mdb";
 
-            //invoke a CompactDatabase method of a JRO object
-            //pass Parameters array
-            objJRO.GetType().InvokeMember("CompactDatabase",
-                BindingFlags.InvokeMethod,
-                null,
-                objJRO,
-                oParams);
+                //filling Parameters array
+                //cnahge "Jet OLEDB:Engine Type=5" to an appropriate value
+                // or leave it as is if you db is JET4X format (access 2000,2002)
+                //(yes, jetengine5 is for JET4X, no misprint here)
+                oParams = new object[] {
+                    conString,
+                    "Provider=Microsoft.Jet.OLEDB.4.0;Data" + 
+                    " Source="+tempdb+";Jet OLEDB:Engine Type=5"};
+            
+                //check free disk space before creating new file
+                string fullPath = Path.GetFullPath(_path);
+                long freespace; // The amount of free space available on the drive, in bytes
+                DriveInfo[] drives = DriveInfo.GetDrives();
+                foreach (DriveInfo drive in drives)
+                {
+                    if (drive.Name.ToString() == fullPath.Substring(0, 3))
+                    {
+                        freespace = drive.AvailableFreeSpace;
+                        var mdbSize = new System.IO.FileInfo(_path).Length;
+                        if (mdbSize > freespace)
+                        {
+                            MessageBox.Show("Недостаточно места на диске, нужно освободить ещё " + (mdbSize - freespace) / (1024 * 1024) + " Мб");
+                            break;
+                        }
+                        else
+                        {
+                            //invoke a CompactDatabase method of a JRO object
+                            //pass Parameters array
+                            objJRO.GetType().InvokeMember("CompactDatabase",
+                                BindingFlags.InvokeMethod,
+                                null,
+                                objJRO,
+                                oParams);
 
-            //database is compacted now to a new file C:\\tempdb.mdw
-            //let's copy it over an old one and delete it
+                            //database is compacted now to a new file C:\\tempdb.mdw
+                            //let's copy it over an old one and delete it
 
-            System.IO.File.Delete(_path);
-            System.IO.File.Move(".\\tempdb.mdb", _path);
+                            System.IO.File.Delete(_path);
+                            System.IO.File.Move(tempdb, _path);
 
-            //clean up (just in case)
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(objJRO);
-            objJRO = null;
-            if (dbconn != null)
-                dbconn.Close();
-            addToLog("Сжатие базы данных завершено");
+
+                            //clean up (just in case)
+                            System.Runtime.InteropServices.Marshal.ReleaseComObject(objJRO);
+                            objJRO = null;
+                            if (dbconn != null)
+                                dbconn.Close();
+                            addToLog("Сжатие базы данных завершено");
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (System.IO.IOException errorMesage)
+            {
+                MessageBox.Show(errorMesage.ToString());
+            }
+
         }
 
         public static void CreateNewAccessDatabase(string _path) // NEED ADD CHECK FOR A FREE DISK SPACE HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         {
-            /*
-            try
-            {
-                string currentdir = Directory.GetCurrentDirectory();
-                //DriveInfo driveInfo = new DriveInfo(Directory.GetCurrentDirectory().First(1).ToString());
-                //long FreeSpace = driveInfo.AvailableFreeSpace;
-            }
-            catch (System.IO.IOException errorMesage)
-            {
-                Console.WriteLine(errorMesage);
-            }
-            */
-            ADOX.Catalog cat = new ADOX.Catalog();
+            if (File.Exists(_path))
+                MessageBox.Show("Ой, кажется, файл '" + _path.ToString().Replace(".\\", "") + "' уже есть в текущей папке. \n" +
+                                "Переименуйте его или удалите, чтобы продолжить работу");
+            else
+            {   
+                ADOX.Catalog cat = new ADOX.Catalog();
 
-            cat.Create("Provider=Microsoft.Jet.OLEDB.4.0;" + "Data Source=" + _path + "; Jet OLEDB:Engine Type=5");
+                cat.Create("Provider=Microsoft.Jet.OLEDB.4.0;" + "Data Source=" + _path + "; Jet OLEDB:Engine Type=5");
                 
-            //Now Close the database
-            ADODB.Connection con = cat.ActiveConnection as ADODB.Connection;
-            if (con != null)
-                con.Close();
-            cat = null;
-            Program.checkCompactError(_path);
+                //Now Close the database
+                ADODB.Connection con = cat.ActiveConnection as ADODB.Connection;
+                if (con != null)
+                    con.Close();
+                cat = null;
+                Program.checkCompactError(_path);
+            }
         }
        
         public static void CreateIndexes(string _path)

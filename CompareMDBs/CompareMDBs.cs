@@ -125,6 +125,7 @@ namespace CompareMDBs
                     NotFoundInTeamsoft.ForEach(delegate(String name)
                     {
                         listView1.Items.Add(name, counter);
+                        listView1.Refresh();
                         counter++;
                     });
                     progressBar1.Value += 2;

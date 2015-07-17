@@ -32,6 +32,7 @@
             this.listView1 = new System.Windows.Forms.ListView();
             this.Compare = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.label7 = new System.Windows.Forms.Label();
             this.btn_compact = new System.Windows.Forms.Button();
             this.lbl_conditionTab1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -55,7 +56,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.pckr_dueDate = new System.Windows.Forms.DateTimePicker();
             this.lst_allTables = new System.Windows.Forms.CheckedListBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.Compare.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -115,6 +115,15 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Compare MDBs";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(3, 3);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(241, 13);
+            this.label7.TabIndex = 9;
+            this.label7.Text = "Список талиц, которые были импортированы:";
             // 
             // btn_compact
             // 
@@ -222,7 +231,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 3);
+            this.label1.Location = new System.Drawing.Point(3, 3);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(276, 13);
             this.label1.TabIndex = 4;
@@ -372,15 +381,6 @@
             this.lst_allTables.Name = "lst_allTables";
             this.lst_allTables.Size = new System.Drawing.Size(517, 169);
             this.lst_allTables.TabIndex = 0;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 3);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(241, 13);
-            this.label7.TabIndex = 9;
-            this.label7.Text = "Список талиц, которые были импортированы:";
             // 
             // CompareMDBs
             // 

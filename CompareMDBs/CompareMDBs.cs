@@ -167,7 +167,7 @@ namespace CompareMDBs
 
                     try
                     {
-                        lbl_conditionTab1.Text = "Первичные ключи установлены. Идёт сжатие БД, поождите.";
+                        lbl_conditionTab1.Text = "Первичные ключи установлены. Идёт сжатие БД, подождите.";
                         lbl_conditionTab1.Refresh();
                         Program.compactAndRepair(".\\Teamsoft.mdb");
                         progressBar1.Value += 40;
@@ -180,6 +180,7 @@ namespace CompareMDBs
                         progressBar1.Value += 10;
                         lbl_conditionTab1.Text = "Готово!";
                         lbl_conditionTab1.Refresh();
+                        progressBar1.Value = 0;
 
                     }
                     catch (Exception e2)
@@ -214,7 +215,9 @@ namespace CompareMDBs
                     {
                         Program.dropThisShit(".\\Teamsoft.mdb", txtDelTable.Text.ToString(), true);
                         progressBar2.Value = progressBar2.Maximum;
-                        lbl_conditionTab2.Text = "Таблица " + txtDelTable.Text.ToString() + " была удалена!";
+                        lbl_conditionTab2.Text = "Готово!";
+                        lbl_conditionTab2.Refresh();
+                        progressBar2.Value = 0;
 
                     }
                     else if (txtDelTable.Text.ToString().Length == 0)
@@ -288,6 +291,7 @@ namespace CompareMDBs
             */
             lbl_conditionTab3.Text = "Старые данные из выбранных таблиц удалены!";
             lbl_conditionTab3.Refresh();
+            progressBar3.Value = 0;
             //MessageBox.Show("Old values from all selected tables were deleted!");
             //MessageBox.Show("Старые данные из выбранных таблиц были удалены!");
             }
@@ -334,6 +338,7 @@ namespace CompareMDBs
                 //MessageBox.Show("Выбранные таблицы экспортированы в файл 'export.mdb'");
                 lbl_conditionTab3.Text = "Готово!";
                 lbl_conditionTab3.Refresh();
+                progressBar3.Value = 0;
             }
         }
 
@@ -358,7 +363,7 @@ namespace CompareMDBs
                     Program.prepareDB(".\\Teamsoft.mdb");
                     progressBar1.Value += 25;
 
-                    lbl_conditionTab1.Text = "БД подготовлена. Идёт сжатие БД, поождите.";
+                    lbl_conditionTab1.Text = "БД подготовлена. Идёт сжатие БД, подождите.";
                     lbl_conditionTab1.Refresh();
                     Program.compactAndRepair(".\\Teamsoft.mdb");
                     progressBar1.Value += 50;
@@ -370,6 +375,7 @@ namespace CompareMDBs
                     //MessageBox.Show("Сжатие базы данных выполнено, индексирование проведено.");
                     lbl_conditionTab1.Text = "Сжатие базы данных выполнено, индексирование проведено.";
                     lbl_conditionTab1.Refresh();
+                    progressBar1.Value = 0;
                 }
             }
             catch(OleDbException ex)
@@ -400,7 +406,7 @@ namespace CompareMDBs
                     Program.prepareDB(".\\Teamsoft.mdb");
                     progressBar3.Value += 25;
 
-                    lbl_conditionTab3.Text = "БД подготовлена. Идёт сжатие БД, поождите.";
+                    lbl_conditionTab3.Text = "БД подготовлена. Идёт сжатие БД, подождите.";
                     lbl_conditionTab3.Refresh();
                     Program.compactAndRepair(".\\Teamsoft.mdb");
                     progressBar3.Value += 50;
@@ -412,6 +418,7 @@ namespace CompareMDBs
                     //MessageBox.Show("Сжатие базы данных выполнено, индексирование проведено.");
                     lbl_conditionTab3.Text = "Сжатие базы данных выполнено, индексирование проведено.";
                     lbl_conditionTab3.Refresh();
+                    progressBar3.Value = 0;
                 }
             }
             catch (OleDbException ex)
@@ -442,7 +449,7 @@ namespace CompareMDBs
                     Program.prepareDB(".\\Teamsoft.mdb");
                     progressBar2.Value += 25;
 
-                    lbl_conditionTab2.Text = "БД подготовлена. Идёт сжатие БД, поождите.";
+                    lbl_conditionTab2.Text = "БД подготовлена. Идёт сжатие БД, подождите.";
                     lbl_conditionTab2.Refresh();
                     Program.compactAndRepair(".\\Teamsoft.mdb");
                     progressBar2.Value += 50;
@@ -454,6 +461,7 @@ namespace CompareMDBs
                     //MessageBox.Show("Сжатие базы данных выполнено, индексирование проведено.");
                     lbl_conditionTab2.Text = "Сжатие базы данных выполнено, индексирование проведено.";
                     lbl_conditionTab2.Refresh();
+                    progressBar2.Value = 0;
                 }
             }
             catch (OleDbException ex)

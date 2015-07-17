@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.IO;
 using System.Management;
+using System.Text.RegularExpressions;
 //using System.Data.SqlClient;
 using ADOX; //Requires Microsoft ADO Ext. 2.8 for DDL and Security
 using ADODB;
@@ -172,7 +173,7 @@ namespace CompareMDBs
                 {
                     //MessageBox.Show("Table " + _tableForDel + " was dropped!");
                     addToLog("Таблица " + _tableForDel + " была удалена");
-                    MessageBox.Show("Таблица " + _tableForDel + " была удалена!");
+                    //MessageBox.Show("Таблица " + _tableForDel + " была удалена!");
                 }
             }
             dbconn.Close();
@@ -351,7 +352,8 @@ namespace CompareMDBs
 
             try
             {
-                string tempdb = ".\\tempdb_" + DateTime.Now.ToString().Replace(":", "-") + ".mdb";
+                Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+                string tempdb = ".\\tempdb_" + rgx.Replace(DateTime.Now.ToString("yyyyMMddHHmmss"), "") + ".mdb";
                 //string tempdb = ".\\tempdb_" + DateTime.Now.ToString().Replace(".", "_").Replace(" ", "_").Replace(":", "_") + ".mdb";
                 //filling Parameters array
                 //cnahge "Jet OLEDB:Engine Type=5" to an appropriate value

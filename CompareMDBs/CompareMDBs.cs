@@ -32,6 +32,10 @@ namespace CompareMDBs
         {
             if (e.TabPage.Name == "tab_delOldData")
             {
+                lbl_conditionTab3.Text = "";
+                lbl_conditionTab3.Refresh();
+                progressBar3.Value = 0;
+
                 if (!File.Exists(".\\Teamsoft.mdb"))
                     //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
                     MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
@@ -69,6 +73,21 @@ namespace CompareMDBs
                     lst_allTables.Refresh();
                 }
             }
+
+            if (e.TabPage.Name == "tabPage1")
+            {
+                lbl_conditionTab1.Text = "";
+                lbl_conditionTab1.Refresh();
+                progressBar1.Value = 0;
+            }
+
+            if (e.TabPage.Name == "tabPage2")
+            {
+                lbl_conditionTab2.Text = "";
+                lbl_conditionTab2.Refresh();
+                progressBar2.Value = 0;
+            }
+
             sender = null;
             e = null;
         }
@@ -110,6 +129,7 @@ namespace CompareMDBs
                 listView1.Items.Clear();
                 progressBar1.Value = 0;
                 lbl_conditionTab1.Text = "";
+                lbl_conditionTab1.Refresh();
 
                 if (!File.Exists(".\\empty.mdb") || !File.Exists(".\\Teamsoft.mdb"))
                     //MessageBox.Show("Files empty.mdb or Teamsoft.mdb don't exist in current directory.");
@@ -117,6 +137,7 @@ namespace CompareMDBs
                 else
                 {
                     lbl_conditionTab1.Text = "Ищем недостающие таблицы";
+                    lbl_conditionTab1.Refresh();
                     var empty = Program.GetDBTables(".\\empty.mdb");
                     var teamsoft = Program.GetDBTables(".\\Teamsoft.mdb");
                     var NotFoundInTeamsoft = empty.Except(teamsoft).ToList();
@@ -133,7 +154,7 @@ namespace CompareMDBs
                     Program.insertTables(".\\empty.mdb", ".\\Teamsoft.mdb", NotFoundInTeamsoft);
                     //MessageBox.Show("All tables have been inserted!");
                     //MessageBox.Show("Все таблицы были импортированы!");
-                    lbl_conditionTab1.Text = "Все таблицы были импортированы! Идёт подготовка БД.";
+                    lbl_conditionTab1.Text = "Все таблицы были импортированы! Идёт подготовка БД, подождите.";
                     lbl_conditionTab1.Refresh();
                     progressBar1.Value += 3;
 
@@ -149,11 +170,17 @@ namespace CompareMDBs
                         lbl_conditionTab1.Text = "Первичные ключи установлены. Идёт сжатие БД, поождите.";
                         lbl_conditionTab1.Refresh();
                         Program.compactAndRepair(".\\Teamsoft.mdb");
-                        progressBar1.Value += 50;
+                        progressBar1.Value += 40;
                         //MessageBox.Show("Database compacted!");
                         //MessageBox.Show("Сжатие базы данных выполнено.");
-                        lbl_conditionTab1.Text = "Сжатие базы данных выполнено.";
+                        lbl_conditionTab1.Text = "Сжатие базы данных выполнено. Идёт поиск недостающих индексов.";
                         lbl_conditionTab1.Refresh();
+
+                        Program.CreateIndexes(".\\Teamsoft.mdb");
+                        progressBar1.Value += 10;
+                        lbl_conditionTab1.Text = "Готово!";
+                        lbl_conditionTab1.Refresh();
+
                     }
                     catch (Exception e2)
                     {
@@ -174,6 +201,10 @@ namespace CompareMDBs
         {
             try
             {
+                lbl_conditionTab2.Text = "";
+                lbl_conditionTab2.Refresh();
+                progressBar2.Value = 0;
+
                 if (!File.Exists(".\\Teamsoft.mdb"))
                     //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
                     MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
@@ -182,13 +213,9 @@ namespace CompareMDBs
                     if (Program.GetDBTables(".\\Teamsoft.mdb").Contains(txtDelTable.Text.ToString()))
                     {
                         Program.dropThisShit(".\\Teamsoft.mdb", txtDelTable.Text.ToString(), true);
-                        /*
-                        if (lst_allTables.Items.Count > 0 && lst_allTables.Items.Contains(txtDelTable.Text.ToString()))
-                        {
-                            lst_allTables.Items.Remove(txtDelTable.Text.ToString());
-                            lst_allTables.Refresh();
-                        }
-                        */
+                        progressBar2.Value = progressBar2.Maximum;
+                        lbl_conditionTab2.Text = "Таблица " + txtDelTable.Text.ToString() + " была удалена!";
+
                     }
                     else if (txtDelTable.Text.ToString().Length == 0)
                         MessageBox.Show("Название таблицы не введено!");
@@ -270,6 +297,11 @@ namespace CompareMDBs
         //export tables checked in listview to new MDB
         private void btn_exportToNewMDB_Click(object sender, EventArgs e)
         {
+            lbl_conditionTab3.Text = "";
+            lbl_conditionTab3.Refresh();
+            progressBar3.Value = 0;
+            progressBar3.Maximum = lst_allTables.CheckedItems.Count * 2 + 10;
+
             if (lst_allTables.CheckedItems.Count == 0)
                 //MessageBox.Show("There's no tables to import! Please check tables in list and try again.");
                 MessageBox.Show("Таблицы для импорта не выбраны! Отметьте таблицы в списке и поробуйте повторить.");
@@ -277,6 +309,10 @@ namespace CompareMDBs
             {
                 if (!File.Exists(".\\exported.mdb"))
                     Program.CreateNewAccessDatabase(".\\exported.mdb");
+                lbl_conditionTab3.Text = "БД подготовлена для импорта таблиц.";
+                lbl_conditionTab3.Refresh();
+                progressBar3.Value += 2;
+
                 List<string> lstToExport = new List<string>();
                 lstToExport.Clear();
                 foreach (Object item in lst_allTables.CheckedItems)
@@ -284,12 +320,20 @@ namespace CompareMDBs
                     if (Program.GetDBTables(".\\exported.mdb").Contains(item.ToString()))
                         Program.dropThisShit(".\\exported.mdb", item.ToString(), false);
                     lstToExport.Add(item.ToString());
+                    progressBar3.Value ++;
                 }
 
                 Program.insertTables(".\\Teamsoft.mdb", ".\\exported.mdb", lstToExport);
+                progressBar3.Value += lst_allTables.CheckedItems.Count;
+                lbl_conditionTab3.Text = "Выбранные таблицы экспортированы в файл 'export.mdb'. Идёт сжатие базы, подождите.";
+                lbl_conditionTab3.Refresh();
+
                 Program.compactAndRepair(".\\exported.mdb");
+                progressBar3.Value += 8;
                 //MessageBox.Show("All selcted tables were exported into 'export.mdb'");
-                MessageBox.Show("Выбранные таблицы экспортированы в файл 'export.mdb'");
+                //MessageBox.Show("Выбранные таблицы экспортированы в файл 'export.mdb'");
+                lbl_conditionTab3.Text = "Готово!";
+                lbl_conditionTab3.Refresh();
             }
         }
 

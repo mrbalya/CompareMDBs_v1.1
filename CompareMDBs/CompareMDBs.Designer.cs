@@ -37,6 +37,10 @@
             this.label4 = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.lbl_conditionTab2 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.progressBar2 = new System.Windows.Forms.ProgressBar();
+            this.btn_compact2 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.txtDelTable = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
@@ -51,10 +55,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.pckr_dueDate = new System.Windows.Forms.DateTimePicker();
             this.lst_allTables = new System.Windows.Forms.CheckedListBox();
-            this.btn_compact2 = new System.Windows.Forms.Button();
-            this.progressBar2 = new System.Windows.Forms.ProgressBar();
-            this.label6 = new System.Windows.Forms.Label();
-            this.lbl_conditionTab2 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.Compare.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -78,9 +79,9 @@
             this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.listView1.Location = new System.Drawing.Point(6, 6);
+            this.listView1.Location = new System.Drawing.Point(6, 19);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(518, 228);
+            this.listView1.Size = new System.Drawing.Size(517, 213);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             // 
@@ -100,6 +101,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.label7);
             this.tabPage1.Controls.Add(this.btn_compact);
             this.tabPage1.Controls.Add(this.lbl_conditionTab1);
             this.tabPage1.Controls.Add(this.label4);
@@ -174,6 +176,48 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Удалить таблицу";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // lbl_conditionTab2
+            // 
+            this.lbl_conditionTab2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lbl_conditionTab2.AutoSize = true;
+            this.lbl_conditionTab2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lbl_conditionTab2.Location = new System.Drawing.Point(85, 268);
+            this.lbl_conditionTab2.Name = "lbl_conditionTab2";
+            this.lbl_conditionTab2.Size = new System.Drawing.Size(55, 15);
+            this.lbl_conditionTab2.TabIndex = 8;
+            this.lbl_conditionTab2.Text = "                ";
+            // 
+            // label6
+            // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label6.Location = new System.Drawing.Point(6, 268);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(73, 15);
+            this.label6.TabIndex = 7;
+            this.label6.Text = "Состояние:";
+            // 
+            // progressBar2
+            // 
+            this.progressBar2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar2.Location = new System.Drawing.Point(6, 286);
+            this.progressBar2.Name = "progressBar2";
+            this.progressBar2.Size = new System.Drawing.Size(517, 23);
+            this.progressBar2.TabIndex = 6;
+            // 
+            // btn_compact2
+            // 
+            this.btn_compact2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btn_compact2.Location = new System.Drawing.Point(3, 240);
+            this.btn_compact2.Name = "btn_compact2";
+            this.btn_compact2.Size = new System.Drawing.Size(100, 25);
+            this.btn_compact2.TabIndex = 5;
+            this.btn_compact2.Text = "Compact + index";
+            this.btn_compact2.UseVisualStyleBackColor = true;
+            this.btn_compact2.Click += new System.EventHandler(this.btn_compact2_Click);
             // 
             // label1
             // 
@@ -329,47 +373,14 @@
             this.lst_allTables.Size = new System.Drawing.Size(517, 169);
             this.lst_allTables.TabIndex = 0;
             // 
-            // btn_compact2
+            // label7
             // 
-            this.btn_compact2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btn_compact2.Location = new System.Drawing.Point(3, 240);
-            this.btn_compact2.Name = "btn_compact2";
-            this.btn_compact2.Size = new System.Drawing.Size(100, 25);
-            this.btn_compact2.TabIndex = 5;
-            this.btn_compact2.Text = "Compact + index";
-            this.btn_compact2.UseVisualStyleBackColor = true;
-            this.btn_compact2.Click += new System.EventHandler(this.btn_compact2_Click);
-            // 
-            // progressBar2
-            // 
-            this.progressBar2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar2.Location = new System.Drawing.Point(6, 286);
-            this.progressBar2.Name = "progressBar2";
-            this.progressBar2.Size = new System.Drawing.Size(517, 23);
-            this.progressBar2.TabIndex = 6;
-            // 
-            // label6
-            // 
-            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label6.Location = new System.Drawing.Point(6, 268);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(73, 15);
-            this.label6.TabIndex = 7;
-            this.label6.Text = "Состояние:";
-            // 
-            // lbl_conditionTab2
-            // 
-            this.lbl_conditionTab2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lbl_conditionTab2.AutoSize = true;
-            this.lbl_conditionTab2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lbl_conditionTab2.Location = new System.Drawing.Point(85, 268);
-            this.lbl_conditionTab2.Name = "lbl_conditionTab2";
-            this.lbl_conditionTab2.Size = new System.Drawing.Size(55, 15);
-            this.lbl_conditionTab2.TabIndex = 8;
-            this.lbl_conditionTab2.Text = "                ";
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(3, 3);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(241, 13);
+            this.label7.TabIndex = 9;
+            this.label7.Text = "Список талиц, которые были импортированы:";
             // 
             // CompareMDBs
             // 
@@ -419,6 +430,7 @@
         private System.Windows.Forms.Label lbl_conditionTab2;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ProgressBar progressBar2;
+        private System.Windows.Forms.Label label7;
     }
 }
 

@@ -156,7 +156,7 @@ namespace CompareMDBs
                     if (path.Contains("Teamsoft.mdb"))
                     {
                         addToLog("Таблица " + _tableForDel + " была удалена");
-                        MessageBox.Show("Таблица " + _tableForDel + " была удалена!");
+                        //MessageBox.Show("Таблица " + _tableForDel + " была удалена!");
                     }
                     ///////////////////////////////////////////////////////////////msgbox?
                 }

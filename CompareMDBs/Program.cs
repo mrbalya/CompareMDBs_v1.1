@@ -24,7 +24,16 @@ namespace CompareMDBs
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new CompareMDBs());
+
+            DialogResult result;
+            using (var loginForm = new LoginForm())
+                result = loginForm.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                // login was successful
+                Application.Run(new CompareMDBs());
+            }
+            else Application.Exit();
             
         }
         /*

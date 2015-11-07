@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.OleDb;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -53,7 +54,6 @@ namespace CompareMDBs
             }
         }
         */
-
         public static T ConvertFromDBVal<T>(object obj) // usefull if query could return null
         {
             if (obj == null || obj == DBNull.Value)
@@ -123,7 +123,7 @@ namespace CompareMDBs
             dbconn.Close();
         }
 
-        public static void dropThisShit(string path, string _tableForDel, bool _checkIsExch)
+        public static void dropThisShit(string path, string _tableForDel, bool _saveNotExch)
         {
             string conString = ("Provider=Microsoft.JET.OLEDB.4.0;data source=" + path + ";Persist Security Info=False;");
             OleDbConnection dbconn = new OleDbConnection(conString);
@@ -144,7 +144,7 @@ namespace CompareMDBs
                 counter++;
             }
 
-            if (hasTime && _checkIsExch)
+            if (hasTime && _saveNotExch)
             {
                 string selQuery = "SELECT count(*) FROM " + _tableForDel + " where time is not null;";
                 dbcommand.CommandText = selQuery;
@@ -153,36 +153,56 @@ namespace CompareMDBs
 
                 int RowsAffected = (int)dbcommand.ExecuteScalar();
                 if (RowsAffected > 0)
-                    MessageBox.Show("В таблице " + _tableForDel + " есть записи, которые не были отправлены на сервер. Таблицу удалить нельзя!" +
-                                    "\n Сделайте от пользователя отправку данных за период и повторите попытку.");
+                {
+                    //MessageBox.Show("В таблице " + _tableForDel + " есть записи, которые не были отправлены на сервер. Таблицу удалить нельзя!" +
+                    //                "\n Сделайте от пользователя отправку данных за период и повторите попытку.");
+                    string selectIntoTemp = "SELECT f.* INTO temp_" + _tableForDel + " FROM " + _tableForDel + " AS f IN '" + path + "' where time is not null;";
+                    dbcommand.CommandText = selectIntoTemp;
+                    dbcommand.CommandType = CommandType.Text;
+                    dbcommand.Connection = dbconn;
+                    int result1 = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());
+
+                    string dropQuery = "DROP TABLE " + _tableForDel + ";";
+                    dbcommand.CommandText = dropQuery;
+                    dbcommand.CommandType = CommandType.Text;
+                    dbcommand.Connection = dbconn;
+                    int result2 = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());
+
+                    string restoreFromTemp = "SELECT f.* INTO " + _tableForDel + " FROM temp_" + _tableForDel + " AS f;";
+                    dbcommand.CommandText = restoreFromTemp;
+                    dbcommand.CommandType = CommandType.Text;
+                    dbcommand.Connection = dbconn;
+                    int result3 = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());
+
+                    dropQuery = "DROP TABLE temp_" + _tableForDel + ";";
+                    dbcommand.CommandText = dropQuery;
+                    dbcommand.CommandType = CommandType.Text;
+                    dbcommand.Connection = dbconn;
+                    int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());
+                }
                 else
                 {
                     string dropQuery = "DROP TABLE " + _tableForDel + ";";
                     dbcommand.CommandText = dropQuery;
                     dbcommand.CommandType = CommandType.Text;
                     dbcommand.Connection = dbconn;
-                    int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery()); //dbcommand.ExecuteNonQuery();
-                    //MessageBox.Show("Table " + _tableForDel + " was dropped!");
+                    int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());
                     if (path.Contains("Teamsoft.mdb"))
                     {
                         addToLog("Таблица " + _tableForDel + " была удалена");
-                        //MessageBox.Show("Таблица " + _tableForDel + " была удалена!");
                     }
-                    ///////////////////////////////////////////////////////////////msgbox?
                 }
             }
             else
             {
-                string dropQuery2 = "DROP TABLE " + _tableForDel + ";";
-                dbcommand.CommandText = dropQuery2;
+                string dropQuery = "DROP TABLE " + _tableForDel + ";";
+                dbcommand.CommandText = dropQuery;
                 dbcommand.CommandType = CommandType.Text;
                 dbcommand.Connection = dbconn;
-                int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());//dbcommand.ExecuteNonQuery();
-                if (_checkIsExch)
+                int result = ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());
+                if (_saveNotExch)
                 {
-                    //MessageBox.Show("Table " + _tableForDel + " was dropped!");
                     addToLog("Таблица " + _tableForDel + " была удалена");
-                    //MessageBox.Show("Таблица " + _tableForDel + " была удалена!");
                 }
             }
             dbconn.Close();
@@ -359,8 +379,7 @@ namespace CompareMDBs
 
             object objJRO = Activator.CreateInstance(Type.GetTypeFromProgID("JRO.JetEngine"));
 
-            try
-            {
+            //try{
                 Regex rgx = new Regex("[^a-zA-Z0-9 -]");
                 string tempdb = ".\\tempdb_" + rgx.Replace(DateTime.Now.ToString("yyyyMMddHHmmss"), "") + ".mdb";
                 //string tempdb = ".\\tempdb_" + DateTime.Now.ToString().Replace(".", "_").Replace(" ", "_").Replace(":", "_") + ".mdb";
@@ -397,7 +416,6 @@ namespace CompareMDBs
                                 null,
                                 objJRO,
                                 oParams);
-
                             //database is compacted now to a new file C:\\tempdb.mdw
                             //let's copy it over an old one and delete it
 
@@ -415,12 +433,38 @@ namespace CompareMDBs
                         }
                     }
                 }
-            }
-            catch (System.IO.IOException errorMesage)
+            /*}
+            catch (Exception ex)
             {
-                MessageBox.Show(errorMesage.ToString());
-            }
+                if (ex.InnerException.ToString().Length > 0)
+                {
+                    Program.addToLog(ex.InnerException.Message);
+                    MessageBox.Show(ex.InnerException.Message);
+                }
+                else
+                {
+                    Program.addToLog(ex.Message);
+                    MessageBox.Show(ex.Message);
+                }
+            }*/
 
+        }
+
+        public static int SelectRowsCount (string _path, string _tableName)
+        {
+            string conString = ("Provider=Microsoft.JET.OLEDB.4.0;data source=" + _path + ";Persist Security Info=False;");
+            OleDbConnection dbconn = new OleDbConnection(conString);
+            dbconn.Open();
+            OleDbCommand dbcommand = new OleDbCommand();
+            dbcommand.CommandType = CommandType.Text;
+            dbcommand.Connection = dbconn;
+
+            string selectCnt = "Select count(*) from " + _tableName;
+            dbcommand.CommandText = selectCnt;
+            int cnt = ConvertFromDBVal<int>(dbcommand.ExecuteScalar());
+
+            dbconn.Close();
+            return cnt;
         }
 
         public static void CreateNewAccessDatabase(string _path) // NEED ADD CHECK FOR A FREE DISK SPACE HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -534,9 +578,18 @@ namespace CompareMDBs
                         corruptedTables = corruptedTables + "\n" + currentDr;
                     }
                 }
-                catch (OleDbException oError)
+                catch (Exception ex)
                 {
-                    MessageBox.Show("Oops! " + oError.ToString());
+                    if (ex.InnerException.ToString().Length > 0)
+                    {
+                        Program.addToLog(ex.InnerException.Message);
+                        MessageBox.Show("Oops! " + ex.InnerException.Message);
+                    }
+                    else
+                    {
+                        Program.addToLog(ex.Message);
+                        MessageBox.Show("Oops! " + ex.Message);
+                    }
                 }
                 conn.Close();
 

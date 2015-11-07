@@ -1,4 +1,5 @@
-﻿namespace CompareMDBs
+﻿using System.Windows.Forms;
+namespace CompareMDBs
 {
     partial class CompareMDBs
     {
@@ -38,6 +39,9 @@
             this.label4 = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.saveNotSent = new System.Windows.Forms.CheckBox();
+            this.lbl_rowsCount = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.lbl_conditionTab2 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.progressBar2 = new System.Windows.Forms.ProgressBar();
@@ -46,6 +50,7 @@
             this.txtDelTable = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
             this.tab_delOldData = new System.Windows.Forms.TabPage();
+            this.lst_allTables = new System.Windows.Forms.ListView();
             this.btn_compact3 = new System.Windows.Forms.Button();
             this.lbl_conditionTab3 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -55,7 +60,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pckr_dueDate = new System.Windows.Forms.DateTimePicker();
-            this.lst_allTables = new System.Windows.Forms.CheckedListBox();
             this.Compare.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -98,6 +102,7 @@
             this.Compare.SelectedIndex = 0;
             this.Compare.Size = new System.Drawing.Size(538, 343);
             this.Compare.TabIndex = 3;
+            this.Compare.Resize += new System.EventHandler(this.CompareMDBs_ResizeEnd);
             // 
             // tabPage1
             // 
@@ -171,6 +176,9 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.saveNotSent);
+            this.tabPage2.Controls.Add(this.lbl_rowsCount);
+            this.tabPage2.Controls.Add(this.label8);
             this.tabPage2.Controls.Add(this.lbl_conditionTab2);
             this.tabPage2.Controls.Add(this.label6);
             this.tabPage2.Controls.Add(this.progressBar2);
@@ -185,6 +193,37 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Удалить таблицу";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // saveNotSent
+            // 
+            this.saveNotSent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.saveNotSent.AutoSize = true;
+            this.saveNotSent.Checked = true;
+            this.saveNotSent.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.saveNotSent.Location = new System.Drawing.Point(290, 21);
+            this.saveNotSent.Name = "saveNotSent";
+            this.saveNotSent.Size = new System.Drawing.Size(206, 17);
+            this.saveNotSent.TabIndex = 11;
+            this.saveNotSent.Text = "Сохранить неотправленные записи";
+            this.saveNotSent.UseVisualStyleBackColor = true;
+            // 
+            // lbl_rowsCount
+            // 
+            this.lbl_rowsCount.AutoSize = true;
+            this.lbl_rowsCount.Location = new System.Drawing.Point(141, 46);
+            this.lbl_rowsCount.Name = "lbl_rowsCount";
+            this.lbl_rowsCount.Size = new System.Drawing.Size(10, 13);
+            this.lbl_rowsCount.TabIndex = 10;
+            this.lbl_rowsCount.Text = " ";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(3, 46);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(132, 13);
+            this.label8.TabIndex = 9;
+            this.label8.Text = "Всего записей в rep_del:";
             // 
             // lbl_conditionTab2
             // 
@@ -259,6 +298,7 @@
             // 
             // tab_delOldData
             // 
+            this.tab_delOldData.Controls.Add(this.lst_allTables);
             this.tab_delOldData.Controls.Add(this.btn_compact3);
             this.tab_delOldData.Controls.Add(this.lbl_conditionTab3);
             this.tab_delOldData.Controls.Add(this.label5);
@@ -268,7 +308,6 @@
             this.tab_delOldData.Controls.Add(this.label3);
             this.tab_delOldData.Controls.Add(this.label2);
             this.tab_delOldData.Controls.Add(this.pckr_dueDate);
-            this.tab_delOldData.Controls.Add(this.lst_allTables);
             this.tab_delOldData.Location = new System.Drawing.Point(4, 22);
             this.tab_delOldData.Name = "tab_delOldData";
             this.tab_delOldData.Padding = new System.Windows.Forms.Padding(3);
@@ -276,6 +315,18 @@
             this.tab_delOldData.TabIndex = 2;
             this.tab_delOldData.Text = "Удалить старые данные";
             this.tab_delOldData.UseVisualStyleBackColor = true;
+            // 
+            // lst_allTables
+            // 
+            this.lst_allTables.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lst_allTables.CheckBoxes = true;
+            this.lst_allTables.Location = new System.Drawing.Point(6, 19);
+            this.lst_allTables.Name = "lst_allTables";
+            this.lst_allTables.Size = new System.Drawing.Size(517, 179);
+            this.lst_allTables.TabIndex = 10;
+            this.lst_allTables.UseCompatibleStateImageBehavior = false;
             // 
             // btn_compact3
             // 
@@ -370,18 +421,6 @@
             this.pckr_dueDate.Size = new System.Drawing.Size(200, 20);
             this.pckr_dueDate.TabIndex = 1;
             // 
-            // lst_allTables
-            // 
-            this.lst_allTables.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lst_allTables.CheckOnClick = true;
-            this.lst_allTables.FormattingEnabled = true;
-            this.lst_allTables.Location = new System.Drawing.Point(6, 19);
-            this.lst_allTables.Name = "lst_allTables";
-            this.lst_allTables.Size = new System.Drawing.Size(517, 169);
-            this.lst_allTables.TabIndex = 0;
-            // 
             // CompareMDBs
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -415,7 +454,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DateTimePicker pckr_dueDate;
-        private System.Windows.Forms.CheckedListBox lst_allTables;
         private System.Windows.Forms.Button btn_deleteOldData;
         private System.Windows.Forms.Button btn_exportToNewMDB;
         private System.Windows.Forms.Button btn_compact;
@@ -431,6 +469,10 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ProgressBar progressBar2;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label lbl_rowsCount;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ListView lst_allTables;
+        private System.Windows.Forms.CheckBox saveNotSent;
     }
 }
 

@@ -23,11 +23,23 @@ namespace CompareMDBs
             this.pckr_dueDate.Format = DateTimePickerFormat.Custom;
             this.pckr_dueDate.CustomFormat = "yyyy-MM-dd";
             this.pckr_dueDate.Value = DateTime.Today.AddYears(-1);
+
+            this.lst_allTables.View = View.Details;
+            this.lst_allTables.CheckBoxes = true;
+            this.lst_allTables.GridLines = true;
+            this.lst_allTables.Columns.Add("", -2, HorizontalAlignment.Left);
+            this.lst_allTables.Columns.Add("Table name", -2, HorizontalAlignment.Left);
+            this.lst_allTables.Columns.Add("Rows number", -2, HorizontalAlignment.Left);
+            //this.lst_allTables.Sorting = SortOrder.Ascending;
+            
             //Compare.SelectedIndexChanged += new EventHandler(Tabs_SelectedIndexChanged); //handling of tab selected
             Compare.Selected += new TabControlEventHandler(Tabs_Selected); //handling of tab selected
             Program.addToLog("******** Запуск программы ********");
         }
-
+        private void CompareMDBs_ResizeEnd(object sender, EventArgs e)
+        {
+            Compare.Refresh();
+        }
         private void Tabs_Selected(object sender, TabControlEventArgs e)
         {
             if (e.TabPage.Name == "tab_delOldData")
@@ -37,17 +49,17 @@ namespace CompareMDBs
                 progressBar3.Value = 0;
 
                 if (!File.Exists(".\\Teamsoft.mdb"))
-                    //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
                     MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
                 else
                 {
                     List<string> allTables = new List<string>();
                     //array with tables that should be displayed at the top of CheckedListView
+                    /*
                     string[] highPriorityTables = new string[] {"info_task", "info_contactpotential", "info_companypreparation2",
                                                 "info_taskpreparation", "info_taskmaterial", "info_action", "info_companypromo"};
-
+                    */
                     allTables = Program.GetDBTables(".\\Teamsoft.mdb");
-
+                    /*                    
                     List<string> selectedTables = new List<string>();
                     if (lst_allTables.Items.Count > 0 && 
                         lst_allTables.Items.Count != allTables.Count &&
@@ -56,36 +68,96 @@ namespace CompareMDBs
                         foreach (var Item in lst_allTables.CheckedItems)
                                 selectedTables.Add(Item.ToString());
                         lst_allTables.Items.Clear();
-                    }
-
+                    }*/
+                    /*
                     //check if high priority tables exists in current DB and add it to listview
                     for (int i = 0; i < highPriorityTables.Count(); i++)
-                        if (!lst_allTables.Items.Contains(highPriorityTables[i].ToString()))
-                            lst_allTables.Items.Add(highPriorityTables[i]);
+                        allTables.ForEach(delegate(String name)
+                        {
+                            if (name == highPriorityTables[i].ToString())
+                            {
+                                List<string> subitemsTables = new List<string>();
+                                foreach (ListViewItem item in lst_allTables.Items)
+                                {
+                                    foreach (ListViewItem.ListViewSubItem subItem in item.SubItems)
+                                    {
+                                        subitemsTables.Add(subItem.Text);
+                                    }
+                                }
+                                if (!subitemsTables.Contains(name))
+                                {
+                                    ListViewItem lstViewItem = new ListViewItem();
+                                    lstViewItem.SubItems.Add(highPriorityTables[i].ToString());
+                                    lstViewItem.SubItems.Add(Program.SelectRowsCount(".\\Teamsoft.mdb", highPriorityTables[i].ToString()).ToString());
+                                    lst_allTables.Items.Add(lstViewItem);
+                                    lstViewItem = null;
+                                }
+                                subitemsTables = null;
+                            }
+                        });
+                    */      
                     //check if table is an "info_" table and add it to listview if it isn't there yet
                     allTables.ForEach(delegate(String name)
                     {
-                        if (!lst_allTables.Items.Contains(name) && name.StartsWith("info_"))
-                            lst_allTables.Items.Add(name);
-                        if (selectedTables.Contains(name))
-                            lst_allTables.SetItemChecked(lst_allTables.Items.IndexOf(name), true);
+                        List<string> subitemsTables = new List<string>();
+                        foreach (ListViewItem item in lst_allTables.Items)
+                        {
+                            foreach (ListViewItem.ListViewSubItem subItem in item.SubItems)
+                            {
+                                subitemsTables.Add(subItem.Text);
+                            }
+                        }
+                        if (!subitemsTables.Contains(name) && name.StartsWith("info_"))
+                        {                            
+                            ListViewItem lstViewItem = new ListViewItem();
+                            lstViewItem.SubItems.Add(name);
+                            lstViewItem.SubItems.Add(Program.SelectRowsCount(".\\Teamsoft.mdb", name).ToString());
+                            lst_allTables.Items.Add(lstViewItem);
+                            lstViewItem = null;
+                        }
+                        subitemsTables = null;
+                        /*                        
+	                    if (!lst_allTables.Items.Contains(name) && name.StartsWith("info_"))
+		                    lst_allTables.Items.Add(name);
+	                    if (selectedTables.Contains(name))
+		                    lst_allTables.SetItemChecked(lst_allTables.Items.IndexOf(name), true);
+                        */
                     });
+                    
                     lst_allTables.Refresh();
                 }
+                lst_allTables.ListViewItemSorter = new Sorter(2);
             }
 
             if (e.TabPage.Name == "tabPage1")
             {
                 lbl_conditionTab1.Text = "";
                 lbl_conditionTab1.Refresh();
-                progressBar1.Value = 0;
             }
 
             if (e.TabPage.Name == "tabPage2")
             {
                 lbl_conditionTab2.Text = "";
                 lbl_conditionTab2.Refresh();
+                lbl_rowsCount.Text = "";
+                lbl_rowsCount.Refresh();
                 progressBar2.Value = 0;
+
+                if (!File.Exists(".\\Teamsoft.mdb"))
+                    MessageBox.Show("Файл 'Teamsoft.mdb' не существуют в текущей папке.");
+                else
+                {
+                    if (Program.GetDBTables(".\\Teamsoft.mdb").Contains("rep_del"))
+                    {
+                        lbl_rowsCount.Text = Program.SelectRowsCount(".\\Teamsoft.mdb", "rep_del").ToString();
+                        lbl_rowsCount.Refresh();
+                    }
+                    else
+                    {
+                        lbl_rowsCount.Text = "в базе нет rep_del'a =(";
+                        lbl_rowsCount.Refresh();
+                    }
+                }
             }
 
             sender = null;
@@ -183,56 +255,132 @@ namespace CompareMDBs
                         progressBar1.Value = 0;
 
                     }
-                    catch (Exception e2)
+                    catch (Exception ex)
                     {
-                        MessageBox.Show(e2.Message.ToString());
+                        if (ex.InnerException.ToString().Length > 0)
+                        {
+                            Program.addToLog(ex.InnerException.Message);
+                            MessageBox.Show(ex.InnerException.Message);
+                        }
+                        else
+                        {
+                            Program.addToLog(ex.Message);
+                            MessageBox.Show(ex.Message);
+                        }
+                    }
+
+                    if (lst_allTables.Items.Count > 0 && listView1.Items.Count > 0)
+                    {
+                        foreach (ListViewItem item in listView1.Items)
+                        {
+                            if (item.Text.StartsWith("info_"))
+                            {
+                                ListViewItem lstViewItem = new ListViewItem();
+                                lstViewItem.SubItems.Add(item.Text);
+                                lstViewItem.SubItems.Add(Program.SelectRowsCount(".\\Teamsoft.mdb", item.Text).ToString());
+                                lst_allTables.Items.Add(lstViewItem);
+                                lstViewItem = null;
+                            }
+                        }
+                        lst_allTables.ListViewItemSorter = new Sorter(2);
+                        lst_allTables.Refresh();
                     }
                 }
             }
-            catch (OleDbException ex)
+            catch (Exception ex)
             {
-                //MessageBox.Show("Oops! " + ex.Message + " \n Try open database with MS Access.");
-                MessageBox.Show("Упс! \n" + ex.Message + " \n Попробуйте открыть базу в MS Access");
-
+                if (ex.InnerException.ToString().Length > 0)
+                {
+                    Program.addToLog(ex.InnerException.Message);
+                    MessageBox.Show("Упс! \n" + ex.InnerException.Message + " \n Попробуйте открыть базу в MS Access");
+                }
+                else
+                {
+                    Program.addToLog(ex.Message);
+                    MessageBox.Show("Упс! \n" + ex.Message + " \n Попробуйте открыть базу в MS Access");
+                }
             }
         }
 
         //drop table
         private void button2_Click(object sender, EventArgs e)
         {
-            try
+            if (txtDelTable.Text.ToString().Length == 0)
+                MessageBox.Show("Название таблицы не введено!");
+            else
             {
-                lbl_conditionTab2.Text = "";
-                lbl_conditionTab2.Refresh();
-                progressBar2.Value = 0;
-
-                if (!File.Exists(".\\Teamsoft.mdb"))
-                    //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
-                    MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
-                else
+                DialogResult dialogResult = System.Windows.Forms.DialogResult.Yes;
+                if (saveNotSent.Checked == false)
+                    dialogResult = MessageBox.Show("Подтвердите удаление таблицы " + txtDelTable.Text + " со всем содержимым. \n " +
+                                                 "Если в таблице есть неотправленные данные, они также будут удалены!"
+                                               , "To drop, or not to drop: that is the question", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
                 {
-                    if (Program.GetDBTables(".\\Teamsoft.mdb").Contains(txtDelTable.Text.ToString()))
+                    try
                     {
-                        Program.dropThisShit(".\\Teamsoft.mdb", txtDelTable.Text.ToString(), true);
-                        progressBar2.Value = progressBar2.Maximum;
-                        lbl_conditionTab2.Text = "Готово!";
+                        lbl_conditionTab2.Text = "";
                         lbl_conditionTab2.Refresh();
                         progressBar2.Value = 0;
 
+                        if (!File.Exists(".\\Teamsoft.mdb"))
+                            //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
+                            MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
+                        else
+                        {
+                            if (Program.GetDBTables(".\\Teamsoft.mdb").Contains(txtDelTable.Text.ToString()))
+                            {
+                                Program.dropThisShit(".\\Teamsoft.mdb", txtDelTable.Text.ToString(), saveNotSent.Checked);
+                                if (lst_allTables.Items.Count > 0)
+                                {
+                                    foreach (ListViewItem item in lst_allTables.Items)
+                                    {
+                                        foreach (ListViewItem.ListViewSubItem subItem in item.SubItems)
+                                        {
+                                            if (subItem.Text == txtDelTable.Text.ToString())
+                                            {
+                                                lst_allTables.Items.Remove(item);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                progressBar2.Value = progressBar2.Maximum;
+                                lbl_conditionTab2.Text = "Готово!";
+                                lbl_conditionTab2.Refresh();
+                                progressBar2.Value = 0;
+                                if (Program.GetDBTables(".\\Teamsoft.mdb").Contains("rep_del"))
+                                {
+                                    lbl_rowsCount.Text = Program.SelectRowsCount(".\\Teamsoft.mdb", "rep_del").ToString();
+                                    lbl_rowsCount.Refresh();
+                                }
+                                else
+                                {
+                                    lbl_rowsCount.Text = "в базе нет rep_del'a =(";
+                                    lbl_rowsCount.Refresh();
+                                }
+
+                            }
+                            else //MessageBox.Show("Table with name " + txtDelTable.Text.ToString() +
+                                //               " couldn't be found in database. Try drop another table.");
+                                MessageBox.Show("Таблицу с названием '" + txtDelTable.Text.ToString() +
+                                            "' не удалось найти в базе данных. Проверьте, правильно ли ввели название таблицы.");
+                        }
                     }
-                    else if (txtDelTable.Text.ToString().Length == 0)
-                        MessageBox.Show("Название таблицы не введено!");
-                    else //MessageBox.Show("Table with name " + txtDelTable.Text.ToString() +
-                        //               " couldn't be found in database. Try drop another table.");
-                        MessageBox.Show("Таблицу с названием '" + txtDelTable.Text.ToString() +
-                                  "' не удалось найти в базе данных. Проверьте, правильно ли ввели название таблицы.");
+                    catch (Exception ex)
+                    {
+                        if (ex.InnerException.ToString().Length > 0)
+                        {
+                            Program.addToLog(ex.InnerException.Message);
+                            MessageBox.Show("Упс! \n" + ex.InnerException.Message + " \n Попробуйте открыть базу в MS Access");
+                        }
+                        else
+                        {
+                            Program.addToLog(ex.Message);
+                            MessageBox.Show("Упс! \n" + ex.Message + " \n Попробуйте открыть базу в MS Access");
+                        }
+                    }
                 }
-            }
-            catch (OleDbException ex)
-            {
-                //MessageBox.Show("Oops! " + ex.Message + " \n Try open database with MS Access.");
-                MessageBox.Show("Упс! \n" + ex.Message + " \n Попробуйте открыть базу в MS Access");
-            }
+            }      
         }
 
         //delete old data
@@ -250,10 +398,10 @@ namespace CompareMDBs
             if (lst_allTables.CheckedItems.Count > 0)
             {
                 progressBar3.Maximum = lst_allTables.CheckedItems.Count;// +10;
-                foreach (Object item in lst_allTables.CheckedItems)
+                foreach (ListViewItem item in lst_allTables.CheckedItems)
                 {
                     //System.Threading.Thread.Sleep(1000);
-                    lbl_conditionTab3.Text = "Удаляются данные из таблицы " + item.ToString();
+                    lbl_conditionTab3.Text = "Удаляются данные из таблицы " + item.SubItems[1].Text;
                     lbl_conditionTab3.Refresh();
                     //System.Threading.Thread.Sleep(1000);
                     DataTable columns = dbconn.GetOleDbSchemaTable(OleDbSchemaGuid.Columns,
@@ -262,12 +410,12 @@ namespace CompareMDBs
                     var schema = dbconn.GetSchema("COLUMNS");
                     string dueDate = pckr_dueDate.Value.ToString("yyyy-MM-dd");
                     //choose values in what column should be compared with selected date
-                    if (schema.Select("TABLE_NAME='" + item.ToString() + "' AND COLUMN_NAME='datefrom'").Length > 0)
-                        delQuery = "DELETE FROM " + item.ToString() + " where datefrom < #" + dueDate + "#";
-                    else if (schema.Select("TABLE_NAME='" + item.ToString() + "' AND COLUMN_NAME='date'").Length > 0)
-                        delQuery = "DELETE FROM " + item.ToString() + " where date < #" + dueDate + "#";
+                    if (schema.Select("TABLE_NAME='" + item.SubItems[1].Text + "' AND COLUMN_NAME='datefrom'").Length > 0)
+                        delQuery = "DELETE FROM " + item.SubItems[1].Text + " where datefrom < #" + dueDate + "#";
+                    else if (schema.Select("TABLE_NAME='" + item.SubItems[1].Text + "' AND COLUMN_NAME='date'").Length > 0)
+                        delQuery = "DELETE FROM " + item.SubItems[1].Text + " where date < #" + dueDate + "#";
                     else
-                        delQuery = "DELETE FROM " + item.ToString() + " where currenttime < #" + dueDate + "#";
+                        delQuery = "DELETE FROM " + item.SubItems[1].Text + " where currenttime < #" + dueDate + "#";
 
                     dbcommand.CommandText = delQuery;
                     dbcommand.CommandType = CommandType.Text;
@@ -275,10 +423,19 @@ namespace CompareMDBs
 
                     int result = Program.ConvertFromDBVal<int>(dbcommand.ExecuteNonQuery());
                     //MessageBox.Show("Old values from table '" + item.ToString() + "' were deleted!");
-                    Program.addToLog("Записи, внесённые ранее " + dueDate.ToString() + ", были удалены из таблицы " + item.ToString());
+                    Program.addToLog("Записи, внесённые ранее " + dueDate.ToString() + ", были удалены из таблицы " + item.SubItems[1].Text);
                     progressBar3.Value += 1;
                 }
             dbconn.Close();
+
+            lbl_conditionTab3.Text = "Старые данные из выбранных таблиц удалены. Выполняется обновление списка";
+            foreach (ListViewItem item in lst_allTables.CheckedItems)
+            {
+                item.SubItems[2].Text = Program.SelectRowsCount(".\\Teamsoft.mdb", item.SubItems[1].Text).ToString();
+                item.Checked = false;
+            }
+            lst_allTables.ListViewItemSorter = new Sorter(2);
+            lst_allTables.Refresh();
             /*
             lbl_conditionTab3.Text = "Старые данные из выбранных таблиц удалены. Выполняется сжатие БД.";
             lbl_conditionTab3.Refresh();
@@ -319,11 +476,11 @@ namespace CompareMDBs
 
                 List<string> lstToExport = new List<string>();
                 lstToExport.Clear();
-                foreach (Object item in lst_allTables.CheckedItems)
+                foreach (ListViewItem item in lst_allTables.CheckedItems)
                 {
-                    if (Program.GetDBTables(".\\exported.mdb").Contains(item.ToString()))
-                        Program.dropThisShit(".\\exported.mdb", item.ToString(), false);
-                    lstToExport.Add(item.ToString());
+                    if (Program.GetDBTables(".\\exported.mdb").Contains(item.SubItems[1].Text))
+                        Program.dropThisShit(".\\exported.mdb", item.SubItems[1].Text, false);
+                    lstToExport.Add(item.SubItems[1].Text);
                     progressBar3.Value ++;
                 }
 
@@ -344,20 +501,20 @@ namespace CompareMDBs
 
         //compact and repair Teamsoft.mdb + add indexes
         private void btn_compact_Click(object sender, EventArgs e)
-        {
-            try
+        {            
+            progressBar1.Value = 0;
+            lbl_conditionTab1.Text = "";
+            lbl_conditionTab1.Refresh();
+
+            if (!File.Exists(".\\Teamsoft.mdb"))
+                //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
+                MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
+            else
             {
-                progressBar1.Value = 0;
-                lbl_conditionTab1.Text = "";
-                lbl_conditionTab1.Refresh();
+                progressBar1.Value += 5;
 
-                if (!File.Exists(".\\Teamsoft.mdb"))
-                    //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
-                    MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
-                else
+                try
                 {
-                    progressBar1.Value += 5;
-
                     lbl_conditionTab1.Text = "Идёт подготовка БД.";
                     lbl_conditionTab1.Refresh();
                     Program.prepareDB(".\\Teamsoft.mdb");
@@ -377,11 +534,23 @@ namespace CompareMDBs
                     lbl_conditionTab1.Refresh();
                     progressBar1.Value = 0;
                 }
-            }
-            catch(OleDbException ex)
-            {
-                //MessageBox.Show("Oops! \n" + ex.Message + " \n Try compare MDB with MS Access");
-                MessageBox.Show("Упс! \n" + ex.Message + " \n Попробуйте сжать/востановить базу в MS Access");
+                catch (Exception ex)
+                {
+                    lbl_conditionTab1.Text = "Ошибочка вышла =(";
+                    lbl_conditionTab1.Refresh();
+                    progressBar1.Value = 0;
+                    if (ex.InnerException.ToString().Length > 0)
+                    {
+                        Program.addToLog(ex.InnerException.ToString());
+                        MessageBox.Show(ex.InnerException.ToString());
+                    }
+                    else
+                    {
+                        Program.addToLog(ex.ToString());
+                        MessageBox.Show(ex.ToString());
+                    }
+                        
+                }
             }
         }
 
@@ -408,42 +577,69 @@ namespace CompareMDBs
 
                     lbl_conditionTab3.Text = "БД подготовлена. Идёт сжатие БД, подождите.";
                     lbl_conditionTab3.Refresh();
-                    Program.compactAndRepair(".\\Teamsoft.mdb");
-                    progressBar3.Value += 50;
+                    try
+                    {
+                        Program.compactAndRepair(".\\Teamsoft.mdb");
+                        progressBar3.Value += 50;
 
-                    lbl_conditionTab3.Text = "Сжатие базы данных выполнено. Проставляем индексы.";
-                    lbl_conditionTab3.Refresh();
-                    Program.CreateIndexes(".\\Teamsoft.mdb");
-                    progressBar3.Value += 20;
-                    //MessageBox.Show("Сжатие базы данных выполнено, индексирование проведено.");
-                    lbl_conditionTab3.Text = "Сжатие базы данных выполнено, индексирование проведено.";
-                    lbl_conditionTab3.Refresh();
-                    progressBar3.Value = 0;
+                        lbl_conditionTab3.Text = "Сжатие базы данных выполнено. Проставляем индексы.";
+                        lbl_conditionTab3.Refresh();
+                        Program.CreateIndexes(".\\Teamsoft.mdb");
+                        progressBar3.Value += 20;
+                        //MessageBox.Show("Сжатие базы данных выполнено, индексирование проведено.");
+                        lbl_conditionTab3.Text = "Сжатие базы данных выполнено, индексирование проведено.";
+                        lbl_conditionTab3.Refresh();
+                        progressBar3.Value = 0;
+                    }
+                    catch (Exception ex)
+                    {
+                        lbl_conditionTab3.Text = "Ошибочка вышла =(";
+                        lbl_conditionTab3.Refresh();
+                        progressBar3.Value = 0;
+                        if (ex.InnerException.ToString().Length > 0)
+                        {
+                            Program.addToLog(ex.InnerException.ToString());
+                            MessageBox.Show(ex.InnerException.ToString());
+                        }
+                        else
+                        {
+                            Program.addToLog(ex.ToString());
+                            MessageBox.Show(ex.ToString());
+                        }
+                    }
                 }
             }
-            catch (OleDbException ex)
+            catch (Exception ex)
             {
-                //MessageBox.Show("Oops! \n" + ex.Message + " \n Try compare MDB with MS Access");
-                MessageBox.Show("Упс! \n" + ex.Message + " \n Попробуйте сжать/востановить базу в MS Access");
+                if (ex.InnerException.ToString().Length > 0)
+                {
+                    Program.addToLog(ex.InnerException.Message);
+                    MessageBox.Show("Упс! \n" + ex.InnerException.Message + " \n Попробуйте сжать/востановить базу в MS Access");
+                }
+                else
+                {
+                    Program.addToLog(ex.Message);
+                    MessageBox.Show("Упс! \n" + ex.Message + " \n Попробуйте сжать/востановить базу в MS Access");
+                }
             }
         }
 
         private void btn_compact2_Click(object sender, EventArgs e)
         {
-            try
+            progressBar2.Value = 0;
+            progressBar2.Maximum = 100;
+            lbl_conditionTab2.Text = "";
+            lbl_conditionTab2.Refresh();
+
+            if (!File.Exists(".\\Teamsoft.mdb"))
+                //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
+                MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
+            else
             {
-                progressBar2.Value = 0;
-                progressBar2.Maximum = 100;
-                lbl_conditionTab2.Text = "";
-                lbl_conditionTab2.Refresh();
+                progressBar2.Value += 5;
 
-                if (!File.Exists(".\\Teamsoft.mdb"))
-                    //MessageBox.Show("File 'Teamsoft.mdb' doesn't exist in current directory.");
-                    MessageBox.Show("Файл 'Teamsoft.mdb' не существует в текущей папке.");
-                else
+                try
                 {
-                    progressBar2.Value += 5;
-
                     lbl_conditionTab2.Text = "Идёт подготовка БД.";
                     lbl_conditionTab2.Refresh();
                     Program.prepareDB(".\\Teamsoft.mdb");
@@ -463,11 +659,22 @@ namespace CompareMDBs
                     lbl_conditionTab2.Refresh();
                     progressBar2.Value = 0;
                 }
-            }
-            catch (OleDbException ex)
-            {
-                //MessageBox.Show("Oops! \n" + ex.Message + " \n Try compare MDB with MS Access");
-                MessageBox.Show("Упс! \n" + ex.Message + " \n Попробуйте сжать/востановить базу в MS Access");
+                catch (Exception ex)
+                {
+                    lbl_conditionTab2.Text = "Ошибочка вышла =(";
+                    lbl_conditionTab2.Refresh();
+                    progressBar2.Value = 0;
+                    if (ex.InnerException.ToString().Length > 0)
+                    {
+                        Program.addToLog(ex.InnerException.ToString());
+                        MessageBox.Show(ex.InnerException.ToString());
+                    }
+                    else
+                    {
+                        Program.addToLog(ex.ToString());
+                        MessageBox.Show(ex.ToString());
+                    }
+                }
             }
         }
 
